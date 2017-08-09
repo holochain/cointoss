@@ -50,6 +50,21 @@
                     "DataFormat": "json",
                     "Sharing": "public",
                     "SchemaFile": "anchor.json"
+                },
+                {
+                    "Name": "toss_result",
+                    "DataFormat": "json",
+                    "SchemaFile": "toss_result.json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "history_link_base",
+                    "DataFormat": "string",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "history_links",
+                    "DataFormat": "links"
                 }
             ],
             "Functions": [
@@ -86,6 +101,11 @@
                 {
                     "Name": "confirmToss",
                     "CallingType": "string",
+                    "Exposure":"public"
+                },
+                {
+                    "Name": "getTossHistory",
+                    "CallingType": "json",
                     "Exposure":"public"
                 }
 

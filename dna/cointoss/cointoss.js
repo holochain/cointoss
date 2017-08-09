@@ -158,6 +158,30 @@ function confirmToss(toss) {
                 debug("and sum of seed is:"+sum);
                 var result = ((sum%2==0) == entry.call) ? "win" : "loss";
                 debug("so responder gets a "+result);
+
+                var toss_result_hash = commit("toss_result", { 
+                    "toss": toss,
+                    "result": result,
+                    "timeStamp": Date.now()
+                });
+
+                debug("tossResult: " + toss_result_hash);
+
+                // make sure history_link_base exists for this handle pair
+                var ordered_node_ids = orderNodeIds(entry.initiator, entry.responder); // use only one history record per pair by ordering alphabetically
+                var history_link_base_hash = commit("history_link_base", ordered_node_ids);
+
+                debug("history_link_base: " + history_link_base_hash);
+                
+                // write history link
+                var history_link_hash = commit("history_links",
+                    {Links:[
+                        {Base:history_link_base_hash,Link:toss_result_hash,Tag:"toss_result"}
+                    ]});
+
+                debug("history added to " + ordered_node_ids);
+                debug("history_link: " + history_link_hash);
+
                 return result;
             }
         }
@@ -165,6 +189,33 @@ function confirmToss(toss) {
         debug("confirmToss: error getting toss or bad type:"+JSON.stringify(rsp));
     }
     return "";
+}
+
+function orderNodeIds(initiator, responder)
+{
+    if (initiator < responder)
+        return initiator + "|" + responder;
+    else
+        return responder + "|" + initiator;
+}
+
+function getTossHistory(parms)
+{
+    var ordered_node_ids = orderNodeIds(App.Key.Hash, parms.responder);
+
+    results = doGetLinkLoadJsonToAssocArray(makeHash(ordered_node_ids), "toss_result");
+
+    var sortable = [];
+    for (var entry in results) {
+        sortable.push(results[entry]);
+    }
+
+    sortable.sort(function(a, b) {
+        return b.timeStamp - a.timeStamp;
+    });
+
+    return sortable;
+
 }
 
 function winLose(str){
@@ -214,6 +265,28 @@ function isErr(result) {
 }
 
 // helper function to do getLink call, handle the no-link error case, and copy the returned entry values into a nicer array
+function doGetLinkLoadJsonToAssocArray(base, tag) {
+    // initialize return variable
+    var links_filled = {};
+
+    // get the tag from the base in the DHT
+    var links = getLink(base, tag,{Load:true});
+
+    if (!isErr(links))
+    {
+        links = links.Links;
+
+        for (var i=0;i <links.length;i++) {
+            var link = {H:links[i].H};
+            link[tag] = links[i].E;
+            links_filled[links[i].H] = JSON.parse(links[i].E);
+        }
+    }
+
+    debug("Links Filled:"+JSON.stringify(links_filled));
+    return links_filled;
+}
+
 function doGetLinkLoad(base, tag) {
     // get the tag from the base in the DHT
     var links = getLink(base, tag,{Load:true});

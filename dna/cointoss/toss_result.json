@@ -1,0 +1,16 @@
+{
+    "title": "Toss Result Schema",
+    "type": "object",
+    "properties": {
+		"toss": {
+			"type": "string"
+		},
+		"result": {
+			"type": "string"
+		},
+		"timeStamp": {
+			"type": "number"
+		}
+		},
+    "required": ["toss","result","timeStamp"]
+}

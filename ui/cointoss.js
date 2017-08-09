@@ -103,7 +103,22 @@ function setActivePlayer() {
     var elem = $("#players li[data-id="+App.activePlayer+"]");
     $(elem).addClass("selected-player");
     $("#tosses-header").text("Tosses with "+$(elem).data("name"));
-    //getTosses()
+    loadHistory();
+}
+
+function loadHistory()
+{
+    send("getTossHistory", JSON.stringify({ "responder": App.activePlayer }), function(json) {
+        toss_history = JSON.parse(json);
+
+        $("#tosses").html("");
+        
+        for(var x = 0; x < toss_history.length; x++)
+        {
+            $("#tosses").append("<li>" + new Date(toss_history[x].timeStamp).toString("MM/dd/yyyy HH:mm:ss") + ": " + toss_history[x].result + "</li>");
+        }            
+
+    });
 }
 
 function confirmToss(toss) {
