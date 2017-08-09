@@ -114,9 +114,7 @@ function loadHistory()
         $("#tosses").html("");
         
         for(var x = 0; x < toss_history.length; x++)
-        {
             $("#tosses").append("<li>" + new Date(toss_history[x].timeStamp).toString("MM/dd/yyyy HH:mm:ss") + ": " + toss_history[x].result + "</li>");
-        }            
 
     });
 }

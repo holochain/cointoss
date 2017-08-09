@@ -159,6 +159,7 @@ function confirmToss(toss) {
                 var result = ((sum%2==0) == entry.call) ? "win" : "loss";
                 debug("so responder gets a "+result);
 
+                // commit toss result
                 var toss_result_hash = commit("toss_result", { 
                     "toss": toss,
                     "result": result,
@@ -173,7 +174,7 @@ function confirmToss(toss) {
 
                 debug("history_link_base: " + history_link_base_hash);
                 
-                // write history link
+                // write toss result to the history
                 var history_link_hash = commit("history_links",
                     {Links:[
                         {Base:history_link_base_hash,Link:toss_result_hash,Tag:"toss_result"}
@@ -199,6 +200,7 @@ function orderNodeIds(initiator, responder)
         return responder + "|" + initiator;
 }
 
+// gets an array of toss_results of historical tosses against the specified node
 function getTossHistory(parms)
 {
     var ordered_node_ids = orderNodeIds(App.Key.Hash, parms.responder);
