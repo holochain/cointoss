@@ -1,19 +1,19 @@
 [
     {
-        "Convey":"We can create a new handle",
+        "Convey":"We can set our handle",
         "Zome": "cointoss",
-        "FnName": "newHandle",
+        "FnName": "setHandle",
         "Input": "buffaloBill",
-        "Output": "%h2%",
+        "Output": "QmW35WfeBM6d84q1JeuurkzWmdQsGPZTob34gsyMTJ3iX3",
         "Exposure":"public",
         "Err": "",
         "Regexp": ""
     },
     {
-        "Convey":"We can retrieve the new handle",
+        "Convey":"We can retrieve our handle",
         "Zome": "cointoss",
-        "FnName": "getHandle",
-        "Input": "%key%",
+        "FnName": "getMyHandle",
+        "Input": {},
         "Output": "buffaloBill",
         "Exposure":"public",
         "Err": "",

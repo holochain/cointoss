@@ -2,7 +2,6 @@ var App = {users:{},handles:{},handle:"",me:""};
 
 function getHandle(who,callbackFn) {
     send("getHandle",who,function(handle) {
-        cacheUser(handle,who);
         if (callbackFn!=undefined) {
             callbackFn(who,handle);
         }
@@ -11,13 +10,8 @@ function getHandle(who,callbackFn) {
 
 
 function getHandles(callbackFn) {
-    send("getHandles","{}",function(handles) {
-        handles = JSON.parse(handles);
-        for (var i=0;i <handles.length;i++) {
-            var handle = handles[i].handle;
-            var agent = handles[i].agent;
-            cacheUser(handle,agent);
-        }
+    send("getHandles","{}",function(json) {
+        App.handles = JSON.parse(json);
         updatePlayers();
         if (callbackFn!=undefined) {
             callbackFn(handles);
@@ -25,19 +19,17 @@ function getHandles(callbackFn) {
     });
 }
 
-function makePlayerHTML(user) {
-    return "<li data-id=\""+user.hash+"\""+
-        "data-name=\""+user.handle+"\">"+
-        user.handle+
+function makePlayerHTML(handle_object) {
+    return "<li data-id=\""+handle_object.agent+"\""+
+        "data-name=\""+handle_object.handle+"\">"+
+        handle_object.handle+
         "</li>";
 }
 
 function updatePlayers() {
     $("#players").empty();
-    for (var handle in App.users) {
-        if (App.users.hasOwnProperty(handle)) {
-            $("#players").append(makePlayerHTML(App.users[handle]));
-        }
+    for (var x = 0; x < App.handles.length; x++) {
+        $("#players").append(makePlayerHTML(App.handles[x]));
     }
     if (App.activePlayer) {
         setActivePlayer();
@@ -81,7 +73,7 @@ function getUserHandle(user) {
 function doSetHandle() {
     var handle = $("#myHandle").val();
 
-    send("newHandle",handle,function(data) {
+    send("setHandle",handle,function(data) {
         if (data != "") {
             getMyHandle();
         }
@@ -114,7 +106,7 @@ function loadHistory()
         $("#tosses").html("");
         
         for(var x = 0; x < toss_history.length; x++)
-            $("#tosses").append("<li>" + new Date(toss_history[x].timeStamp).toString("MM/dd/yyyy HH:mm:ss") + ": " + toss_history[x].result + "</li>");
+            $("#tosses").append("<li>" + new Date(toss_history[x].timeStamp).toString("MM/dd/yyyy HH:mm:ss") + ": " + toss_history[x].htmlDescription + "</li>");
 
     });
 }

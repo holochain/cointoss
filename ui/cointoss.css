@@ -1,17 +1,23 @@
+#heading {
+  text-align: center;
+}
+
 .players {
   width: 300px;
 }
 
 #players li {
   cursor: pointer;
+  padding-left:10px;
+  padding-right:10px;
 }
 
 #player-name-input, #player-name-button {
   width: 100%;
 }
 
-.players ul {
-
+#req-toss-button-row {
+  text-align: center;
 }
 
 #tosses {
@@ -26,6 +32,11 @@
 }
 
 .selected-player {
-  border: 1px solid grey;
-  border-radius: 4px;
+  background-color:#E0E0E0;
+  color:blue;
+  font-weight:bold;
+}
+
+#handle_block {
+  margin-bottom:15px;
 }

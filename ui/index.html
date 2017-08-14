@@ -10,10 +10,12 @@
     <script type="text/javascript" src="date.js"></script>
   </head>
   <body>
-    <h1>
-      <a id="handle" href="#"></a>
-      <span>Toss a Coin?</span>
-    </h1>
+    
+    <div id="heading">
+      <h1>Cointoss!</h1>
+      <h2>A Holochain Sample Application.</h2>
+      <div id="handle_block">Your Handle: <a id="handle" href="#"></a></div>
+    </div>
     <div class="container">
       <div class="row">
         <div class="col-md-4 players">
@@ -24,6 +26,9 @@
               </ul>
             </div>
           </div>
+          <div class="row" id="req-toss-button-row">
+            <button id="req-toss-button" type="button" class="btn btn-primary">Request Toss</button>
+          </div>
         </div>
         <div class="col-md-8">
           <div class="panel panel-default">
@@ -31,9 +36,6 @@
             <div class="panel-body">
               <ul id="tosses">
               </ul>
-              <div class="row">
-                <button id="req-toss-button" type="button" class="btn btn-primary">Request Toss</button>
-              </div>
             </div>
           </div>
         </div>
