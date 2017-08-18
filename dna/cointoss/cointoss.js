@@ -311,7 +311,7 @@ function setValueOfKey(key, entryType, value)
     if (isErr(value_hash)) // failed
         return { success: false, error: value_hash };
 
-    // if there is not a new key, delete the old value's link
+    // if this is not a new key, delete the old value's link
     if (links.Links.length == 1)
     {
         commit("key_value_link",
@@ -409,50 +409,28 @@ function validate(entry_type,entry,header,sources) {
     return true;
 }
 
-// Are there types of tags that you need special permission to add links?
-// Examples:
-//   - Only Bob should be able to make Bob a "follower" of Alice
-//   - Only Bob should be able to list Alice in his people he is "following"
+// 
 function validateLink(linkEntryType,baseHash,links,pkg,sources){
     debug("validate link: "+linkEntryType);
-    if (linkEntryType=="handle_links") {
-        var length = links.length;
-        // a valid handle is when:
+    
+    if (linkEntryType=="key_value_link")
+    {
+        if (links.length != 1) return false; // there will always on be just one link
+        if (links[0].LinkAction == HC.LinkAction.Upd) return false; // we do not do updates
+        if (links[0].Base != baseHash) return false; // the base must be this base
+        if (links[0].Tag != "value") return false; // The tag name should be "value"
 
-        // there should just be one or two links only
-        if (length==2) {
-            // if this is a modify it will have two links the first of which
-            // will be the del and the second the new link.
-            if (links[0].LinkAction != HC.LinkAction.Del) return false;
-            if (links[1].LinkAction != HC.LinkAction.Add) return false;
-        } else if (length==1) {
-            // if this is a new handle, there will just be one Add link
-            if (links[0].LinkAction != HC.LinkAction.Add) return false;
-        } else {return false;}
+        // source must be same as the base creator
+        var base = get(baseHash,{GetMask:HC.GetMask.Sources});
+        if (isErr(base) || base == undefined || base.length !=1 || base[0] != sources[0]) return false;
 
-        for (var i=0;i<length;i++) {
-            var link = links[i];
-            // the base must be this base
-            if (link.Base != baseHash) return false;
-            // the base must be the source
-            if (link.Base != sources[0]) return false;
-            // The tag name should be "handle"
-            if (link.Tag != "handle") return false;
-            //TODO check something about the link, i.e. get it and check it's type?
-        }
         return true;
     }
+
     return true;
 }
 function validateMod(entry_type,entry,header,replaces,pkg,sources) {
     debug("validate mod: "+entry_type+" header:"+JSON.stringify(header)+" replaces:"+JSON.stringify(replaces));
-    if (entry_type == "handle") {
-        // check that the source is the same as the creator
-        // TODO we could also check that the previous link in the type-chain is the replaces hash.
-        var orig_sources = get(replaces,{GetMask:HC.GetMask.Sources});
-        if (isErr(orig_sources) || orig_sources == undefined || orig_sources.length !=1 || orig_sources[0] != sources[0]) {return false;}
-
-    }
     return true;
 }
 function validateDel(entry_type,hash,pkg,sources) {
