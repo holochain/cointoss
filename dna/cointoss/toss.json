@@ -1,19 +1,27 @@
 {
-    "title": "Toss Schema",
-    "type": "object",
-    "properties": {
-	"initiator": {
-	    "type": "string"
+	"title": "Toss Schema",
+	"type": "object",
+	"properties": {
+		"initiator": {
+			"type": "string"
+		},
+		"initiatorSeedHash": {
+			"type": "string"
+		},
+		"responder": {
+			"type": "string"
+		},
+		"responderSeedHash": {
+			"type": "string"
+		},
+		"call": {
+			"type": "boolean"
+		}
 	},
-	"initiatorSeedHash": {
-	    "type": "string"
-	},
-	"responder": {
-	    "type": "string"
-	},
-	"responderSeedHash": {
-	    "type": "string"
-	}
-    },
-    "required": ["initiator","initiatorSeedHash","responder","responderSeedHash"]
+	"required": [
+		"initiator",
+		"initiatorSeedHash",
+		"responder",
+		"responderSeedHash"
+	]
 }

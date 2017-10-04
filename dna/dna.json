@@ -22,22 +22,9 @@
             "CodeFile": "cointoss.js",
             "Entries": [  
                 {
-                    "Name": "key_value_link_base",
-                    "DataFormat": "string",
-                    "Sharing": "public"
-                },
-                {
-                    "Name": "key_value_link",
-                    "DataFormat": "links"
-                },
-                {
                     "Name": "handle",
                     "DataFormat": "string",
                     "Sharing": "public"
-                },
-                {
-                    "Name": "directory_links",
-                    "DataFormat": "links"
                 },
                 {
                     "Name": "toss",
@@ -49,12 +36,6 @@
                     "Name": "seed",
                     "DataFormat": "string",
                     "Sharing": "private"
-                },
-                {
-                    "Name": "anchor",
-                    "DataFormat": "json",
-                    "Sharing": "public",
-                    "SchemaFile": "anchor.json"
                 },
                 {
                     "Name": "toss_result",
@@ -119,6 +100,66 @@
                     "Exposure":"public"
                 }
 
+            ]
+        },
+        {
+            "Name": "anchors",
+            "Description": "Anchor zome",
+            "RibosomeType": "js",
+            "CodeFile": "anchors.js",
+            "Entries": [
+                {
+                    "Name": "anchor_base",
+                    "DataFormat": "string",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "anchor_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "_anchor_generic_",
+                    "DataFormat": "string",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "_anchor_json_type_for_testing_",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                }
+                ],
+                "Functions": [
+                {
+                    "Name": "set",
+                    "CallingType": "json",
+                    "Exposure":"public"
+                },
+                {
+                    "Name": "get",
+                    "CallingType": "json",
+                    "Exposure":"public"
+                },
+                {
+                    "Name": "addToList",
+                    "CallingType": "json",
+                    "Exposure":"public"
+                },
+                {
+                    "Name": "getFromList",
+                    "CallingType": "json",
+                    "Exposure":"public"
+                },
+                {
+                    "Name": "removeFromList",
+                    "CallingType": "json",
+                    "Exposure":"public"
+                },
+                {
+                    "Name": "makeAnchorHash",
+                    "CallingType": "json",
+                    "Exposure":"public"
+                }
             ]
         }
     ]

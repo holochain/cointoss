@@ -1,0 +1,242 @@
+[
+    {
+        "Convey": "Check get with no parameters 1",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { },
+        "Output": "{\"message\":\"Must pass either anchor or anchorHash!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get with no parameters 2",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "JSON.stringify(get());",
+        "Output": "{\"message\":\"Must pass either anchor or anchorHash!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with no parameters 1",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { },
+        "Output": "{\"message\":\"anchor is a required parameter!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with no parameters 2",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { },
+        "Output": "{\"message\":\"anchor is a required parameter!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with no anchor parameter",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "JSON.stringify(set({ value: 'test_value' }));",
+        "Output": "{\"message\":\"anchor is a required parameter!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with no value parameter",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "JSON.stringify(set({ anchor: 'test_anchor' }));",
+        "Output": "{\"message\":\"value is a required parameter!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get with non-existent key",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchor": "non_existent_key" },
+        "Output": "null",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with prexisting entry without any links",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "commit('anchor_base', 'prexisting_entry'); JSON.stringify(set({ 'anchor': 'prexisting_entry', 'value': 'something' }));",
+        "Output": "{\"message\":\"\\\"prexisting_entry\\\" is not a simple anchor link base!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get with prexisting entry without any links",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "JSON.stringify(get({ 'anchor': 'prexisting_entry' }));",
+        "Output": "{\"message\":\"\\\"prexisting_entry\\\" is not a simple anchor link base!\",\"name\":\"AnchorsError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key", "value": "test_value" },
+        "Output": "\"%h2%\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get returns the value",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchor": "test_key" },
+        "Output": "\"test_value\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set on another key",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key2", "value": "test_value" },
+        "Output": "\"%h2%\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get returns the value on second key",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchor": "test_key2" },
+        "Output": "\"test_value\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with new value on existing key",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key", "value": "test_value_kill_old_value_entry" },
+        "Output": "\"QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check that the old value entry got deleted",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "coreGet(makeHash('_anchor_generic_', JSON.stringify('test_value')));",
+        "Output": "HolochainError: hash not found",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get returns the new object value by hash",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchorHash": "QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND" },
+        "Output": "\"test_value_kill_old_value_entry\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with new value on existing key and with an object value, and specify preserveOldValueEntry",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key", "value": {"name": "object", "value": "test_value2" }, "preserveOldValueEntry": true },
+        "Output": "\"QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check that the old value entry didn't get deleted",
+        "Zome": "anchors",
+        "Raw": true,
+        "Input": "coreGet(makeHash('_anchor_generic_', JSON.stringify('test_value_kill_old_value_entry')));",
+        "Output": "\"test_value_kill_old_value_entry\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get returns the new object value by hash",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchorHash": "QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND" },
+        "Output": "{\"name\":\"object\",\"value\":\"test_value2\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with non-generic entryType of string",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key_non_generic_string", "entryType": "anchor_base", "value": "test_value3"  },
+        "Output": "\"%h2%\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get on non-generic entryType of string",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchor": "test_key_non_generic_string" },
+        "Output": "\"test_value3\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with non-generic entryType of json",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key_non_generic_json", "entryType": "_anchor_json_type_for_testing_", "value": {"name": "object", "value": "test_value4" } },
+        "Output": "\"%h2%\"",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check get on non-generic entryType of json",
+        "Zome": "anchors",
+        "FnName": "get",
+        "Input": { "anchor": "test_key_non_generic_json" },
+        "Output": "{\"name\":\"object\",\"value\":\"test_value4\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    },
+    {
+        "Convey": "Check set with non-generic entryType that is string but pass in json",
+        "Zome": "anchors",
+        "FnName": "set",
+        "Input": { "anchor": "test_key_non_generic_string", "entryType": "anchor_base", "value": {"name": "object", "value": "test_value5" } },
+        "Output": "{\"message\":\"argument 2 (entry) should be string\",\"name\":\"HolochainError\"}",
+        "Exposure": "public",
+        "Err": "",
+        "Regexp": ""
+    }
+]
