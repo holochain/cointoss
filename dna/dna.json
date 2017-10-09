@@ -2,7 +2,7 @@
     "Version": 0,
     "UUID": "00000000-0000-0000-0000-000000000000",
     "Name": "cointoss",
-    "RequiresVersion": 12,
+    "RequiresVersion": 17,
     "Properties": {
         "description": "sample n2n app",
         "language": "en"
@@ -20,7 +20,7 @@
             "Description": "zome that uses n2n for co-signing of a coin toss",
             "RibosomeType": "js",
             "CodeFile": "cointoss.js",
-            "Entries": [  
+            "Entries": [
                 {
                     "Name": "handle",
                     "DataFormat": "string",
