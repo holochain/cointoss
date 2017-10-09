@@ -55,7 +55,7 @@
             ],
             "Functions": [
                 {
-                    "Name": "appProperty",
+                    "Name": "whoAmI",
                     "CallingType": "string",
                     "Exposure":"public"
                 },

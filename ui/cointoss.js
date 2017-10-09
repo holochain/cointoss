@@ -1,66 +1,64 @@
-var App = {users:{},handles:{},handle:"",me:""};
+var Me = null;
+var Handle = null;
+var Handles = {};
+var Users = {};
+var ActivePlayer = null;
 
-function getHandle(who,callbackFn) {
-    send("getHandle",who,function(handle) {
-        if (callbackFn!=undefined) {
-            callbackFn(who,handle);
+function getHandle(who, callbackFn) {
+    send("getHandle", who, function (handle) {
+        if (callbackFn != undefined) {
+            callbackFn(handle);
         }
     });
 }
 
 
 function getHandles(callbackFn) {
-    send("getHandles","{}",function(json) {
-        App.handles = JSON.parse(json);
+    send("getHandles", undefined, function (json) {
+        Handles = JSON.parse(json);
         updatePlayers();
-        if (callbackFn!=undefined) {
+        if (callbackFn != undefined) {
             callbackFn(handles);
         }
     });
 }
 
 function makePlayerHTML(handle_object) {
-    return "<li data-id=\""+handle_object.agent+"\""+
-        "data-name=\""+handle_object.handle+"\">"+
-        handle_object.handle+
+    return "<li data-id=\"" + handle_object.hash + "\"" +
+        "data-name=\"" + handle_object.handle + "\">" +
+        handle_object.handle +
         "</li>";
 }
 
 function updatePlayers() {
     $("#players").empty();
-    for (var x = 0; x < App.handles.length; x++) {
-        $("#players").append(makePlayerHTML(App.handles[x]));
+    for (var x = 0; x < Handles.length; x++) {
+        $("#players").append(makePlayerHTML(Handles[x]));
     }
-    if (App.activePlayer) {
+    if (ActivePlayer) {
         setActivePlayer();
     }
 }
 
-function cacheUser(handle,agent) {
-    var u = {handle:handle,hash:agent};
-    App.users[handle] = u;
-    App.handles[agent] = u;
-}
-
 function getMyHandle(callbackFn) {
-    getHandle(App.me,function(hash,handle){
-        App.handle = handle;
+    getHandle(Me, function (handle) {
+        Handle = handle;
         $("#handle").html(handle);
-        if (callbackFn!=undefined) {
+        if (callbackFn != undefined) {
             callbackFn();
         }
     });
 }
 
 function getProfile() {
-    send("appProperty","App_Key_Hash", function(me) {
-        App.me = me;
+    send("whoAmI", undefined, function (me) {
+        Me = me;
         getMyHandle();
     });
 }
 
 function getUserHandle(user) {
-    var author = App.handles[user];
+    var author = Handles[user];
     var handle;
     if (author == undefined) {
         handle = user;
@@ -73,7 +71,7 @@ function getUserHandle(user) {
 function doSetHandle() {
     var handle = $("#myHandle").val();
 
-    send("setHandle",handle,function(data) {
+    send("setHandle", handle, function (data) {
         if (data != "") {
             getMyHandle();
         }
@@ -87,25 +85,24 @@ function openSetHandle() {
 
 function selectPlayer(event) {
     $("#players li").removeClass("selected-player");
-    App.activePlayer = $(this).data('id');
+    ActivePlayer = $(this).data('id');
     setActivePlayer();
 }
 
 function setActivePlayer() {
-    var elem = $("#players li[data-id="+App.activePlayer+"]");
+    var elem = $("#players li[data-id=" + ActivePlayer + "]");
     $(elem).addClass("selected-player");
-    $("#tosses-header").text("Tosses with "+$(elem).data("name"));
+    $("#tosses-header").text("Tosses with " + $(elem).data("name"));
     loadHistory();
 }
 
-function loadHistory()
-{
-    send("getTossHistory", JSON.stringify({ "responder": App.activePlayer }), function(json) {
+function loadHistory() {
+    send("getTossHistory", JSON.stringify({ "responder": ActivePlayer }), function (json) {
         toss_history = JSON.parse(json);
 
         $("#tosses").html("");
-        
-        for(var x = 0; x < toss_history.length; x++)
+
+        for (var x = 0; x < toss_history.length; x++)
             $("#tosses").append("<li>" + new Date(toss_history[x].timeStamp).toString("MM/dd/yyyy HH:mm:ss") + ": " + toss_history[x].htmlDescription + "</li>");
 
     });
@@ -113,24 +110,24 @@ function loadHistory()
 
 function confirmToss(toss) {
     // TODO add toss caching
-    send("confirmToss",toss,function(result) {
+    send("confirmToss", toss, function (result) {
         alert(result);
     });
 }
 
 function requestToss() {
-    if (!App.activePlayer) {
+    if (!ActivePlayer) {
         alert("pick a player first!");
     }
     else {
-        send("requestToss",JSON.stringify({"agent":App.activePlayer}),function(result) {
+        send("requestToss", JSON.stringify({ "agent": ActivePlayer }), function (result) {
             result = JSON.parse(result);
             confirmToss(result.toss);
         });
     }
 }
 
-$(window).ready(function() {
+$(window).ready(function () {
     $("#handle").on("click", "", openSetHandle);
     $('#setHandleButton').click(doSetHandle);
     $("#players").on("click", "li", selectPlayer);

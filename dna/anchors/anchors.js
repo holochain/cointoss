@@ -120,7 +120,7 @@ var get = function get(parms) {
         else if (err.holochainMessage == "No links for " + _anchor_generic_)
             return new errorObject("\"" + anchor + "\" is not a simple anchor link base!");
 
-        return links;
+        throw err;
     }
 
     if (links.length == 0) return new errorObject("\"" + anchor + "\" is not a simple anchor link base because it has 0 links!");
@@ -225,7 +225,7 @@ function getFromList(parms) {
         if (err.holochainMessage == "hash not found")
             return null;
         else if (err.holochainMessage == ("No links for " + (index === undefined ? "" : index))) // an index was specified and it doesn't exist
-            return index === undefined ? null : [];
+            return index === undefined ? [] : null;
         else
             throw err;
     }

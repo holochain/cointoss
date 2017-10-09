@@ -44,7 +44,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[{\"index\":2,\"value\":\"another_test_value\"},{\"index\":1,\"value\":\"test_value\"},{\"index\":3,\"value\":\"and_yet_another_test_value\"}]",
+        "Output": "[{\"index\":3,\"value\":\"and_yet_another_test_value\"},{\"index\":2,\"value\":\"another_test_value\"},{\"index\":1,\"value\":\"test_value\"}]",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
