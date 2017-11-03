@@ -4,7 +4,7 @@
         "Zome": "cointoss",
         "FnName": "setHandle",
         "Input": "buffaloBill",
-        "Output": "QmW35WfeBM6d84q1JeuurkzWmdQsGPZTob34gsyMTJ3iX3",
+        "Output": "QmWW5zXtV8jjW9BaFNf7RiPQfKTwVyi4y6wJyYD9vVug3w",
         "Exposure":"public",
         "Err": "",
         "Regexp": ""
@@ -20,11 +20,11 @@
         "Regexp": ""
     },
     {
-        "Convey":"getAgent request on non existent handle returns empty string",
+        "Convey":"getAgent request on non existent handle returns null",
         "Zome": "cointoss",
         "FnName": "getAgent",
         "Input": "fooHandle",
-        "Output": "",
+        "Output": "null",
         "Exposure":"public",
         "Err": "",
         "Regexp": ""
@@ -34,7 +34,7 @@
         "Zome": "cointoss",
         "FnName": "getAgent",
         "Input": "buffaloBill",
-        "Output": "%key%",
+        "Output": "%agent%",
         "Exposure":"public",
         "Err": "",
         "Regexp": ""
@@ -44,7 +44,7 @@
         "Zome": "cointoss",
         "FnName": "getHandles",
         "Input": {},
-        "Output": "[{\"agent\":\"%key%\",\"handle\":\"buffaloBill\"}]",
+        "Output": "[{\"handle\":\"buffaloBill\",\"hash\":\"%agent%\"}]",
         "Exposure":"public",
         "Err": "",
         "Regexp": ""

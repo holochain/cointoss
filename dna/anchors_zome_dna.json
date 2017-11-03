@@ -1,0 +1,60 @@
+{
+    "Name": "anchors",
+    "Description": "Anchor zome",
+    "RibosomeType": "js",
+    "CodeFile": "anchors.js",
+    "Entries": [
+        {
+            "Name": "anchor_base",
+            "DataFormat": "string",
+            "Sharing": "public"
+        },
+        {
+            "Name": "anchor_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "_anchor_generic_",
+            "DataFormat": "string",
+            "Sharing": "public"
+        },
+        {
+            "Name": "_anchor_json_type_for_testing_",
+            "DataFormat": "json",
+            "Sharing": "public"
+        }
+        ],
+        "Functions": [
+        {
+            "Name": "set",
+            "CallingType": "json",
+            "Exposure":"public"
+        },
+        {
+            "Name": "get",
+            "CallingType": "json",
+            "Exposure":"public"
+        },
+        {
+            "Name": "addToList",
+            "CallingType": "json",
+            "Exposure":"public"
+        },
+        {
+            "Name": "getFromList",
+            "CallingType": "json",
+            "Exposure":"public"
+        },
+        {
+            "Name": "removeFromList",
+            "CallingType": "json",
+            "Exposure":"public"
+        },
+        {
+            "Name": "makeAnchorHash",
+            "CallingType": "json",
+            "Exposure":"public"
+        }
+    ]
+}

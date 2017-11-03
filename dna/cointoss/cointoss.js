@@ -1,146 +1,135 @@
+/* Holochain API */ var _core_remove=remove;remove=function(a,b){return checkForError("remove",_core_remove(a,b))};var _core_makeHash=makeHash;makeHash=function(a,b){return checkForError("makeHash",_core_makeHash(a,b))};var _core_debug=debug;debug=function(a){return checkForError("debug",_core_debug(a))};var _core_call=call;call=function(a,b,c){return checkForError("call",_core_call(a,b,c))};var _core_commit=commit;commit=function(a,b){return checkForError("commit",_core_commit(a,b))};var _core_get=get;get=function(a,b){return checkForError("get",b===undefined?_core_get(a):_core_get(a,b))};var _core_getLinks=getLinks;getLinks=function(a,b,c){return checkForError("getLinks",_core_getLinks(a,b,c))};var _core_send=send;send=function(a,b,c){return checkForError("send",c===undefined?_core_send(a,b):_core_send(a,b,c))};function checkForError(func,rtn){if(typeof rtn==="object"&&rtn.name=="HolochainError"){var errsrc=new getErrorSource(4);var message='HOLOCHAIN ERROR! "'+rtn.message.toString()+'" on '+func+(errsrc.line===undefined?"":" in "+errsrc.functionName+" at line "+errsrc.line+", column "+errsrc.column);throw{name:"HolochainError",function:func,message:message,holochainMessage:rtn.message,source:errsrc,toString:function(){return this.message}}}return rtn}function getErrorSource(depth){try{throw new Error}catch(e){var line=e.stack.split("\n")[depth];var reg=/at (.*) \(.*:(.*):(.*)\)/g.exec(line);if(reg){this.functionName=reg[1];this.line=reg[2];this.column=reg[3]}}}
+/* Anchors API */ function postCallProcess(rtn){return JSON.parse(rtn)}function setAnchor(anchor,value,entryType,preserveOldValueEntry){var parms={anchor:anchor,value:value};if(entryType!==undefined)parms.entryType=entryType;if(preserveOldValueEntry!==undefined)parms.preserveOldValueEntry=preserveOldValueEntry;return postCallProcess(call("anchors","set",parms))}function getAnchor(anchor,index,anchorHash){var parms={anchor:anchor};if(index!==undefined)parms.index=index;if(anchorHash!==undefined)parms.anchorHash=anchorHash;return postCallProcess(call("anchors","get",parms))}function addToListAnchor(anchor,value,entryType,index,preserveOldValueEntry){var parms={anchor:anchor,value:value};if(entryType!==undefined)parms.entryType=entryType;if(index!==undefined)parms.index=index;if(preserveOldValueEntry!==undefined)parms.preserveOldValueEntry=preserveOldValueEntry;return postCallProcess(call("anchors","addToList",parms))}function getFromListAnchor(anchor,index,anchorHash){var parms={anchor:anchor};if(index!==undefined)parms.index=index;if(anchorHash!==undefined)parms.anchorHash=anchorHash;return postCallProcess(call("anchors","getFromList",parms))}function removeFromListAnchor(anchor,value,entryType,index,preserveOldValueEntry,anchorHash,valueHash){var parms={anchor:anchor};if(value!==undefined)parms.value=value;if(entryType!==undefined)parms.entryType=entryType;if(index!==undefined)parms.index=index;if(preserveOldValueEntry!==undefined)parms.preserveOldValueEntry=preserveOldValueEntry;if(anchorHash!==undefined)parms.anchorHash=anchorHash;if(valueHash!==undefined)parms.valueHash=valueHash;return postCallProcess(call("anchors","removeFromList",parms))}function makeAnchorHash(value,entryType){var parms={value:value};if(entryType!==undefined)parms.entryType=entryType;return postCallProcess(call("anchors","makeAnchorHash",parms))}
+
 // ==============================================================================
 // EXPOSED Functions: visible to the UI, can be called via localhost, web browser, or socket
 // ===============================================================================
 
-function appProperty(name) {
-    if (name == "App_Agent_Hash") {return App.Agent.Hash;}
-    if (name == "App_Agent_String")  {return App.Agent.String;}
-    if (name == "App_Key_Hash")   {return   App.Key.Hash;}
-    if (name == "App_DNA_Hash")   {return   App.DNA.Hash;}
-    return "Error: No App Property with name: " + name;
+var AppID = App.DNA.Hash;
+var Me = App.Agent.Hash;
+
+function whoAmI()
+{
+    return Me;
 }
 
 // set the handle of this node
 function setHandle(handle) {
 
-    // Lookup the stuff we need
-    var oldHandle = getValueOfKey(App.Key.Hash + ":handle");
-    var directory = getDirectory();
+    // get old handle (if any)
+    var oldHandle = getAnchor(Me + ":handle");
 
-    // Set the handle
-    var handle_hash = setValueOfKey(App.Key.Hash + ":handle", "handle", handle).valueHash;
-
-    // Remove the old handle from the directory if there was one
+    // if there was one, remove old handle from directory by index
     if (oldHandle != null)
-    {
-        commit("directory_links",
-            {Links:[
-                {Base:directory,Link:makeHash(oldHandle),Tag:"handle",LinkAction:HC.LinkAction.Del},
-            ]});
-   }
-    
-    // Add the new handle to the directory
-    commit("directory_links",
-        {Links:[
-            {Base:directory,Link:handle_hash,Tag:"handle"}
-        ]});
+        removeFromListAnchor("userDirectory", undefined, undefined, oldHandle);
 
-    return handle_hash;
+    // set handle
+    setAnchor(Me + ":handle", handle);
+
+    // Add the new handle to the directory
+    addToListAnchor("userDirectory", Me, undefined, handle);
+
+    return makeAnchorHash(handle);
 
 }
 
 // returns all the handles in the directory
 function getHandles() {
-    var directory = getDirectory();
-    var links = doGetLinkLoad(directory,"handle");
 
-    var handles = [];
-    for (var i=0;i <links.length;i++) {
-        var h = links[i].handle;
-        handles.push({handle:h,agent:getAgent(h)});
-    }
-    handles.sort(function (a,b) {
+    var rtn = getFromListAnchor("userDirectory");
+
+    handles = [];
+
+    for(var x=0; x < rtn.length; x++)
+        handles.push({ handle: rtn[x].index, hash: rtn[x].value });
+
+    handles.sort(function (a, b) {
         if (a.handle < b.handle)
             return -1;
         if (a.handle > b.handle)
             return 1;
         return 0;
     });
+
     return handles;
+
 }
 
 // returns the current handle of this node
 function getMyHandle() {
-    return getHandle(App.Key.Hash);
+    return getHandle(Me);
 }
 
 // returns the handle of an agent 
 function getHandle(userHash) {
-    return getValueOfKey(userHash + ":handle");
+    return getAnchor(userHash + ":handle");
 }
 
-// returns the agent associated agent by converting the handle to a hash
-// and getting that hash's source from the DHT
+// gets the AgentID (userAddress) based on handle
 function getAgent(handle) {
-    var handleHash = makeHash(handle);
-    var sources = get(handleHash,{GetMask:HC.GetMask.Sources});
-
-    if (isErr(sources)) {sources = [];}
-    if (sources != undefined) {
-        var n = sources.length -1;
-        return (n >= 0) ? sources[n] : "";
-    }
-    return "";
+    return getFromListAnchor("userDirectory", handle);
 }
 
-function commitToss(initiator,initiatorSeed,responder,responderSeed,call) {
-    var toss = {initiator:initiator,initiatorSeedHash:initiatorSeed,responder:responder,responderSeedHash:responderSeed,call:call};
-    return commit("toss",JSON.stringify(toss));
+function commitToss(initiator, initiatorSeed, responder, responderSeed, call) {
+    var toss = { initiator: initiator, initiatorSeedHash: initiatorSeed, responder: responder, responderSeedHash: responderSeed, call: call };
+    return commit("toss", toss);
 }
 
 function commitSeed() {
-    var salt = ""+Math.random()+""+Math.random();
-    return commit("seed",salt+"-"+Math.floor(Math.random()*10));
+    var salt = "" + Math.random() + "" + Math.random();
+    return commit("seed", salt + "-" + Math.floor(Math.random() * 10));
 }
 
 // initiates node2node communication with an agent to commit
 // seeds values for the toss, followed by the toss entry itself afterwards
 function requestToss(req) {
+
     var mySeed = commitSeed();
-    var response = send(req.agent,{type:"tossReq",seed:mySeed});
-    debug("requestToss response:"+response);
-    response = JSON.parse(response);
+    var response = JSON.parse(send(req.agent, { type: "tossReq", seed: mySeed }));
+    
     // create our own copy of the toss according to the seed and call from the responder
-    var theToss = commitToss(App.Key.Hash,mySeed,req.agent,response.seed,response.call);
+    var theToss = commitToss(App.Key.Hash, mySeed, req.agent, response.seed, response.call);
     if (theToss != response.toss) {
-        return {error:"toss didn't match!"};
+        return { error: "toss didn't match!" };
     }
-    return {toss:theToss};
+    return { toss: theToss };
 }
 
-function confirmSeed(seed,seedHash) {
+function confirmSeed(seed, seedHash) {
     seed = JSON.parse(seed);
-    var h = makeHash(seed);
-    return (h == seedHash) ? seed :undefined;
+    var h = makeHash("seed", seed);
+    return (h == seedHash) ? seed : undefined;
 }
 
 // initiates node2node communication with an agent to retrieve the actual seed values
 // after they were committed so we can find out what the toss actually was
 function confirmToss(toss) {
-    var rsp = get(toss,{GetMask:HC.GetMask.Sources+HC.GetMask.Entry+HC.GetMask.EntryType});
-    if (!isErr(rsp) && rsp.EntryType == "toss") {
+
+    var rsp = get(toss, { GetMask: HC.GetMask.Sources + HC.GetMask.Entry + HC.GetMask.EntryType });
+    if (rsp.EntryType == "toss") {
         var sources = rsp.Sources;
         var entry = JSON.parse(rsp.Entry);
         // check with the actual players in the record to get their seed values now that the
         // toss has been recorded publicly
 
-        var iSeed = send(entry.initiator,{type:"seedReq",seedHash:entry.initiatorSeedHash,toss:toss});
-        iSeed = confirmSeed(iSeed,entry.initiatorSeedHash);
-        if (iSeed) {
-            var rSeed = send(entry.responder,{type:"seedReq",seedHash:entry.responderSeedHash,toss:toss});
-            rSeed = confirmSeed(rSeed,entry.responderSeedHash);
-            if (rSeed) {
+        var iSeed = send(entry.initiator, { type: "seedReq", seedHash: entry.initiatorSeedHash, toss: toss });
+        iSeed = confirmSeed(iSeed, entry.initiatorSeedHash);
+
+        if (iSeed)
+        {
+            var rSeed = send(entry.responder, { type: "seedReq", seedHash: entry.responderSeedHash, toss: toss });
+            rSeed = confirmSeed(rSeed, entry.responderSeedHash);
+            if (rSeed)
+            {
                 var i = parseInt(iSeed.split("-")[1]);
                 var r = parseInt(rSeed.split("-")[1]);
-                // compare the odd evenness of the addition of the two seed values to the call
-                var sum = (i+r);
-                debug("call was:"+entry.call);
-                debug("and sum of seed is:"+sum);
-                var result = ((sum%2==0) == entry.call) ? "win" : "loss";
-                debug("so responder gets a "+result);
+            
+                // compare the odd/evenness of the addition of the two seed values to the call
+                var sum = (i + r);
+                var result = ((sum % 2 == 0) == entry.call) ? "win" : "loss";
 
                 // commit toss result
-                var toss_result_hash = commit("toss_result", { 
+                var toss_result_hash = commit("toss_result", {
                     "toss": toss,
                     "result": result,
                     "timeStamp": Date.now()
@@ -151,17 +140,13 @@ function confirmToss(toss) {
                 var history_link_base_hash = commit("history_link_base", ordered_node_ids);
 
                 // write toss result to the history
-                var history_link_hash = commit("history_links",
-                    {Links:[
-                        {Base:history_link_base_hash,Link:toss_result_hash,Tag:"toss_result"}
-                    ]});
+                var history_link_hash = commit("history_links", { Links: [{ Base: history_link_base_hash, Link: toss_result_hash, Tag: "toss_result" }] });
 
                 return result;
             }
         }
-    } else {
-        debug("confirmToss: error getting toss or bad type:"+JSON.stringify(rsp));
-    }
+    } 
+
     return "";
 }
 
@@ -171,14 +156,16 @@ function orderNodeIds(initiator, responder) {
 }
 
 // gets an array of toss_results of historical tosses against the specified node
-function getTossHistory(parms)
-{
-    var ordered_node_ids = orderNodeIds(App.Key.Hash, parms.responder);
+function getTossHistory(parms) {
 
-    results = doGetLinkLoadJsonToAssocArray(makeHash(ordered_node_ids), "toss_result");
+    var ordered_node_ids = orderNodeIds(Me, parms.responder);
+
+    results = getLinkToArray(makeHash("history_link_base", ordered_node_ids), "toss_result");
 
     var sortable = [];
-    for (var entry in results) {
+
+    for (var entry in results)
+    {
         var toss = JSON.parse(get(results[entry].toss));
         var initiatorHandle = getHandle(toss.initiator);
         var responderHandle = getHandle(toss.responder);
@@ -191,7 +178,7 @@ function getTossHistory(parms)
         sortable.push(results[entry]);
     }
 
-    sortable.sort(function(a, b) {
+    sortable.sort(function (a, b) {
         return b.timeStamp - a.timeStamp;
     });
 
@@ -199,7 +186,7 @@ function getTossHistory(parms)
 
 }
 
-function winLose(str){
+function winLose(str) {
     // calculate hash of string
     var hash = 0;
     for (i = 0; i < str.length; i++) {
@@ -213,138 +200,28 @@ function winLose(str){
 // HELPERS: unexposed functions
 // ==============================================================================
 
-
-// helper function to resolve which has will be used as "me"
-function getMe() {return App.Key.Hash;}
-
-// helper function to resolve which hash will be used as the base for the directory
-// currently we just use the DNA hash as our entry for linking the directory to
-// TODO commit an anchor entry explicitly for this purpose.
-function getDirectory() {return App.DNA.Hash;}
-
-
-// helper function to determine if value returned from holochain function is an error
-function isErr(result) {
-    return ((typeof result === 'object') && result.name == "HolochainError");
-}
-
 // helper function to do getLink call, handle the no-link error case, and copy the returned entry values into a nicer array
-function doGetLinkLoadJsonToAssocArray(base, tag) {
+function getLinkToArray(base, tag) {
+
     // initialize return variable
     var links_filled = {};
 
     // get the tag from the base in the DHT
-    var links = getLink(base, tag,{Load:true});
+    try { var links = getLinks(base, tag, { Load: true }); }
 
-    if (!isErr(links))
+    catch(err)
     {
-        links = links.Links;
+        if (err.holochainMessage == "hash not found")
+            return [];
+        else
+            throw err;
+    }
 
-        for (var i=0;i <links.length;i++) {
-            var link = {H:links[i].H};
-            link[tag] = links[i].E;
-            links_filled[links[i].H] = JSON.parse(links[i].E);
-        }
+    for (var i = 0; i < links.length; i++) {
+        links_filled[links[i].Hash] = JSON.parse(links[i].Entry);
     }
 
     return links_filled;
-}
-
-function doGetLinkLoad(base, tag) {
-    // get the tag from the base in the DHT
-    var links = getLink(base, tag,{Load:true});
-    if (isErr(links)) {
-        links = [];
-    } else {
-        links = links.Links;
-    }
-    var links_filled = [];
-    for (var i=0;i <links.length;i++) {
-        var link = {H:links[i].H};
-        link[tag] = links[i].E;
-        links_filled.push(link);
-    }
-
-    return links_filled;
-}
-
-// helper function to call getLinks, handle the no links entry error, and build a simpler links array.
-function doGetLink(base,tag) {
-
-    // get the tag from the base in the DHT
-    var links = getLink(base, tag,{Load:true});
-    if (isErr(links)) {
-        links = [];
-    }
-     else {
-        links = links.Links;
-    }
-
-    var links_filled = [];
-
-    for (var i=0;i <links.length;i++) {
-        links_filled.push(links[i].H);
-    }
-    return links_filled;
-}
-
-// Set a chain-based variable identified by a string (key) to a specified value
-// returns an object with a boolean success property 
-function setValueOfKey(key, entryType, value)
-{
-
-    // Lookup the base entry
-    var links = getLink(makeHash(key), "value", {Load:true});
-
-    if (isErr(links)) // got none, create the base entry, and continue with empty links list
-    { 
-        commit("key_value_link_base", key);
-        links = {Links:[]};
-    }
-
-    if (links.length > 1) // an existing Key/Value base entry will only always have just 1 link entry, no more, no less
-        return { success:false, error: { message:"\"" + key + "\" is not a Key/Value Pair link base!" } };
-
-    // put the value on the chain
-    var value_hash = commit(entryType, value);
-
-    if (isErr(value_hash)) // failed
-        return { success: false, error: value_hash };
-
-    // if this is not a new key, delete the old value's link
-    if (links.Links.length == 1)
-    {
-        commit("key_value_link",
-            { Links:[
-                { Base:makeHash(key),Link:links.Links[0].H, Tag:"value",LinkAction:HC.LinkAction.Del }
-            ]});
-    }
-
-    // add the new value's link
-    var link_hash = commit("key_value_link",
-        { Links:[
-            { Base:makeHash(key),Link:value_hash, Tag:"value" }
-        ]});
-
-    return { success:true, linkHash:link_hash, valueHash:value_hash };
-    
-}
-
-// Get a chain-based variable identified by a string (key)
-function getValueOfKey(key)
-{
-
-    // The variable value is stored by link reference with the key as the base. Get it!
-    var links = getLink(makeHash(key), "value", {Load:true});
-
-    // TODO: Add nicer error handling
-    
-    if (isErr(links)) return null;
-    if (links.Links.length == 0) return null;
-    if (links.Links.length > 1) return null;
-
-    return links.Links[0].E;
-    
 }
 
 
@@ -355,30 +232,27 @@ function getValueOfKey(key)
 // GENESIS - Called only when your source chain is generated:'hc gen chain <name>'
 // ===============================================================================
 function genesis() {                            // 'hc gen chain' calls the genesis function in every zome file for the app
-
-    // use the agent string (usually email) used with 'hc init' to identify myself and create a new handle
     setHandle(App.Agent.String);
-    //commit("anchor",{type:"sys",value:"directory"});
     return true;
 }
 
 // listen for a toss request
-function receive(from,msg) {
+function receive(from, msg) {
     var type = msg.type;
-    if (type=='tossReq') {
+    if (type == 'tossReq') {
         var mySeed = commitSeed();
         // call whether we want head or tails randomly.
-        var call = Math.floor(Math.random()*10)%2 == 0;
-        var theToss = commitToss(from,msg.seed,App.Key.Hash,mySeed,call);
-        return {seed:mySeed,toss:theToss,call:call};
-    } else if (type=="seedReq") {
+        var call = Math.floor(Math.random() * 10) % 2 == 0;
+        var theToss = commitToss(from, msg.seed, App.Key.Hash, mySeed, call);
+        return { seed: mySeed, toss: theToss, call: call };
+    } else if (type == "seedReq") {
         // make sure I committed toss and the seed hash is one of the seeds in the commit
-        var rsp = get(msg.toss,{Local:true,GetMask:HC.GetMask.EntryType+HC.GetMask.Entry});
-        if (!isErr(rsp) && rsp.EntryType == "toss") {
+        var rsp = get(msg.toss, { Local: true, GetMask: HC.GetMask.EntryType + HC.GetMask.Entry });
+        if (rsp.EntryType == "toss") {
             var entry = JSON.parse(rsp.Entry);
             if (entry.initiatorSeedHash == msg.seedHash || entry.responderSeedHash == msg.seedHash) {
                 // if so then I can reveal the seed
-                var seed = get(msg.seedHash,{Local:true,GetMask:HC.GetMask.Entry});
+                var seed = get(msg.seedHash, { Local: true, GetMask: HC.GetMask.Entry });
                 return seed;
             }
         }
@@ -392,49 +266,44 @@ function receive(from,msg) {
 //     any and all changes requested before accepting. put / mod / del & metas
 // ===============================================================================
 
-function validateCommit(entry_type,entry,header,pkg,sources) {
-    debug("validate commit: "+entry_type);
-    return validate(entry_type,entry,header,sources);
+function validateCommit(entry_type, entry, header, pkg, sources) {
+    return validate(entry_type, entry, header, sources);
 }
 
-function validatePut(entry_type,entry,header,pkg,sources) {
-    debug("validate put: "+entry_type);
-    return validate(entry_type,entry,header,sources);
+function validatePut(entry_type, entry, header, pkg, sources) {
+    return validate(entry_type, entry, header, sources);
 }
 
-function validate(entry_type,entry,header,sources) {
-    if (entry_type=="handle") {
+function validate(entry_type, entry, header, sources) {
+    if (entry_type == "handle") {
         return true;
     }
     return true;
 }
 
 // 
-function validateLink(linkEntryType,baseHash,links,pkg,sources){
-    debug("validate link: "+linkEntryType);
-    
-    if (linkEntryType=="key_value_link")
-    {
+function validateLink(linkEntryType, baseHash, links, pkg, sources) {
+
+    if (linkEntryType == "key_value_link") {
+
         if (links.length != 1) return false; // there will always on be just one link
         if (links[0].LinkAction == HC.LinkAction.Upd) return false; // we do not do updates
         if (links[0].Base != baseHash) return false; // the base must be this base
         if (links[0].Tag != "value") return false; // The tag name should be "value"
 
         // source must be same as the base creator
-        var base = get(baseHash,{GetMask:HC.GetMask.Sources});
-        if (isErr(base) || base == undefined || base.length !=1 || base[0] != sources[0]) return false;
+        var base = get(baseHash, { GetMask: HC.GetMask.Sources });
+        if (isErr(base) || base == undefined || base.length != 1 || base[0] != sources[0]) return false;
 
         return true;
     }
 
     return true;
 }
-function validateMod(entry_type,entry,header,replaces,pkg,sources) {
-    debug("validate mod: "+entry_type+" header:"+JSON.stringify(header)+" replaces:"+JSON.stringify(replaces));
+function validateMod(entry_type, entry, header, replaces, pkg, sources) {
     return true;
 }
-function validateDel(entry_type,hash,pkg,sources) {
-    debug("validate del: "+entry_type);
+function validateDel(entry_type, hash, pkg, sources) {
     return true;
 }
 
@@ -444,7 +313,10 @@ function validateDel(entry_type,hash,pkg,sources) {
 //     Default: send and sign the chain entry that matches requested HASH
 // ===============================================================================
 
-function validatePutPkg(entry_type) {return null;}
-function validateModPkg(entry_type) { return null;}
-function validateDelPkg(entry_type) { return null;}
-function validateLinkPkg(entry_type) { return null;}
+function validatePutPkg(entry_type)  { return null; }
+function validateModPkg(entry_type)  { return null; }
+function validateDelPkg(entry_type)  { return null; }
+function validateLinkPkg(entry_type) { return null; }
+
+
+
