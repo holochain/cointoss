@@ -3,8 +3,8 @@
         "Convey": "Check get with no parameters 1",
         "Zome": "anchors",
         "FnName": "get",
-        "Input": { },
-        "Output": "{\"message\":\"Must pass either anchor or anchorHash!\",\"name\":\"AnchorsError\"}",
+        "Input": {},
+        "Output": {"message":"Must pass either anchor or anchorHash!","name":"AnchorsError"},
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -23,8 +23,8 @@
         "Convey": "Check set with no parameters 1",
         "Zome": "anchors",
         "FnName": "set",
-        "Input": { },
-        "Output": "{\"message\":\"anchor is a required parameter!\",\"name\":\"AnchorsError\"}",
+        "Input": {},
+        "Output": {"message":"anchor is a required parameter!","name":"AnchorsError"},
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -33,8 +33,8 @@
         "Convey": "Check set with no parameters 2",
         "Zome": "anchors",
         "FnName": "set",
-        "Input": { },
-        "Output": "{\"message\":\"anchor is a required parameter!\",\"name\":\"AnchorsError\"}",
+        "Input": {},
+        "Output": {"message":"anchor is a required parameter!","name":"AnchorsError"},
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -64,7 +64,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchor": "non_existent_key" },
-        "Output": "null",
+        "Output": null,
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -94,7 +94,7 @@
         "Zome": "anchors",
         "FnName": "set",
         "Input": { "anchor": "test_key", "value": "test_value" },
-        "Output": "\"%h2%\"",
+        "Output": "%h2%",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -104,7 +104,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchor": "test_key" },
-        "Output": "\"test_value\"",
+        "Output": "test_value",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -114,7 +114,7 @@
         "Zome": "anchors",
         "FnName": "set",
         "Input": { "anchor": "test_key2", "value": "test_value" },
-        "Output": "\"%h2%\"",
+        "Output": "%h2%",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -124,7 +124,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchor": "test_key2" },
-        "Output": "\"test_value\"",
+        "Output": "test_value",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -134,7 +134,7 @@
         "Zome": "anchors",
         "FnName": "set",
         "Input": { "anchor": "test_key", "value": "test_value_kill_old_value_entry" },
-        "Output": "\"QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND\"",
+        "Output": "QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -145,7 +145,7 @@
         "Raw": true,
         "Input": "coreGet(makeHash('_anchor_generic_', JSON.stringify('test_value')));",
         "Exposure": "public",
-        "Err": "JS exec error: HOLOCHAIN ERROR! \"hash deleted\" on get",
+        "Err": "Error executing JavaScript: HOLOCHAIN ERROR! \"hash deleted\" on get",
         "Regexp": ""
     },
     {
@@ -153,7 +153,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchorHash": "QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND" },
-        "Output": "\"test_value_kill_old_value_entry\"",
+        "Output": "test_value_kill_old_value_entry",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -163,7 +163,7 @@
         "Zome": "anchors",
         "FnName": "set",
         "Input": { "anchor": "test_key", "value": {"name": "object", "value": "test_value2" }, "preserveOldValueEntry": true },
-        "Output": "\"QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND\"",
+        "Output": "QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -183,7 +183,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchorHash": "QmQtBC2CDh7cXH7HkLJpMfoScDMiG8yDVM5WiwVqCPuiND" },
-        "Output": "{\"name\":\"object\",\"value\":\"test_value2\"}",
+        "Output": {"name":"object","value":"test_value2"},
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -193,7 +193,7 @@
         "Zome": "anchors",
         "FnName": "set",
         "Input": { "anchor": "test_key_non_generic_string", "entryType": "anchor_base", "value": "test_value3"  },
-        "Output": "\"%h2%\"",
+        "Output": "%h2%",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -203,7 +203,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchor": "test_key_non_generic_string" },
-        "Output": "\"test_value3\"",
+        "Output": "test_value3",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -213,7 +213,7 @@
         "Zome": "anchors",
         "FnName": "set",
         "Input": { "anchor": "test_key_non_generic_json", "entryType": "_anchor_json_type_for_testing_", "value": {"name": "object", "value": "test_value4" } },
-        "Output": "\"%h2%\"",
+        "Output": "%h2%",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -223,7 +223,7 @@
         "Zome": "anchors",
         "FnName": "get",
         "Input": { "anchor": "test_key_non_generic_json" },
-        "Output": "{\"name\":\"object\",\"value\":\"test_value4\"}",
+        "Output": {"name":"object","value":"test_value4"},
         "Exposure": "public",
         "Err": "",
         "Regexp": ""

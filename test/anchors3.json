@@ -4,7 +4,7 @@
         "Zome": "anchors",
         "FnName": "addToList",
         "Input": { "anchor": "test_list", "index": 1, "value": "test_value" },
-        "Output": "\"%h2%\"",
+        "Output": "%h2%",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -14,7 +14,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[{\"index\":1,\"value\":\"test_value\"}]",
+        "Output": [{"index":1,"value":"test_value"}],
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -24,7 +24,7 @@
         "Zome": "anchors",
         "FnName": "addToList",
         "Input": { "anchor": "test_list", "index": 2, "value": "another_test_value" },
-        "Output": "\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\"",
+        "Output": "QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -34,7 +34,7 @@
         "Zome": "anchors",
         "FnName": "addToList",
         "Input": { "anchor": "test_list", "index": 3, "value": "and_yet_another_test_value" },
-        "Output": "\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\"",
+        "Output": "QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -44,7 +44,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[{\"index\":3,\"value\":\"and_yet_another_test_value\"},{\"index\":2,\"value\":\"another_test_value\"},{\"index\":1,\"value\":\"test_value\"}]",
+        "Output": [{"index":3,"value":"and_yet_another_test_value"},{"index":2,"value":"another_test_value"},{"index":1,"value":"test_value"}],
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -54,7 +54,7 @@
         "Zome": "anchors",
         "FnName": "removeFromList",
         "Input": { "anchor": "test_list", "value": "test_value" },
-        "Output": "1",
+        "Output": 1,
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -64,7 +64,7 @@
         "Zome": "anchors",
         "FnName": "removeFromList",
         "Input": { "anchor": "test_list", "index": 2 },
-        "Output": "1",
+        "Output": 1,
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -74,7 +74,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[{\"index\":3,\"value\":\"and_yet_another_test_value\"}]",
+        "Output": [{"index":3,"value":"and_yet_another_test_value"}],
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -84,7 +84,7 @@
         "Zome": "anchors",
         "FnName": "addToList",
         "Input": { "anchor": "test_list", "index": 3, "value": "and_an_updated_test_value" },
-        "Output": "\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\"",
+        "Output": "QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -94,7 +94,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[{\"index\":3,\"value\":\"and_an_updated_test_value\"}]",
+        "Output": [{"index":3,"value":"and_an_updated_test_value"}],
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -104,7 +104,7 @@
         "Zome": "anchors",
         "FnName": "addToList",
         "Input": { "anchor": "test_list", "index": 3, "entryType": "_anchor_json_type_for_testing_", "value": { "a_property": "and_an_updated_test_value" } },
-        "Output": "\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\"",
+        "Output": "QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -114,7 +114,7 @@
         "Zome": "anchors",
         "FnName": "addToList",
         "Input": { "anchor": "test_list", "index": 4, "entryType": "_anchor_json_type_for_testing_", "value": { "a_property": "and_an_updated_test_value" } },
-        "Output": "\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\"",
+        "Output": "QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL",
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -124,7 +124,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[{\"index\":3,\"value\":{\"a_property\":\"and_an_updated_test_value\"}},{\"index\":4,\"value\":{\"a_property\":\"and_an_updated_test_value\"}}]",
+        "Output": [{"index":3,"value":{"a_property":"and_an_updated_test_value"}},{"index":4,"value":{"a_property":"and_an_updated_test_value"}}],
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -134,7 +134,7 @@
         "Zome": "anchors",
         "FnName": "removeFromList",
         "Input": { "anchor": "test_list", "value": { "a_property": "and_an_updated_test_value" } },
-        "Output": "2",
+        "Output": 2,
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
@@ -144,7 +144,7 @@
         "Zome": "anchors",
         "FnName": "getFromList",
         "Input": { "anchor": "test_list" },
-        "Output": "[]",
+        "Output": [],
         "Exposure": "public",
         "Err": "",
         "Regexp": ""
