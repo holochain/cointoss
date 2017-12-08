@@ -14,7 +14,7 @@
         "Zome": "cointoss",
         "FnName": "requestToss",
         "Input": {"agent":"%key%"},
-        "Output": "{\"toss\":\"%h%\"}",
+        "Output": {"toss":"%h%"},
         "Exposure":"public",
         "Err": "",
         "Regexp": ""

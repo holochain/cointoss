@@ -44,7 +44,7 @@
         "Zome": "cointoss",
         "FnName": "getHandles",
         "Input": {},
-        "Output": "[{\"handle\":\"buffaloBill\",\"hash\":\"%agent%\"}]",
+        "Output": [{"handle":"buffaloBill","hash":"%agent%"}],
         "Exposure":"public",
         "Err": "",
         "Regexp": ""
