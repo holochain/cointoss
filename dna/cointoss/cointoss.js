@@ -6,7 +6,7 @@
 // ===============================================================================
 
 var AppID = App.DNA.Hash;
-var Me = App.Agent.Hash;
+var Me = App.Key.Hash;
 
 function whoAmI()
 {
@@ -60,7 +60,7 @@ function getMyHandle() {
     return getHandle(Me);
 }
 
-// returns the handle of an agent 
+// returns the handle of an agent
 function getHandle(userHash) {
     return getAnchor(userHash + ":handle");
 }
@@ -86,7 +86,7 @@ function requestToss(req) {
 
     var mySeed = commitSeed();
     var response = JSON.parse(send(req.agent, { type: "tossReq", seed: mySeed }));
-    
+
     // create our own copy of the toss according to the seed and call from the responder
     var theToss = commitToss(App.Key.Hash, mySeed, req.agent, response.seed, response.call);
     if (theToss != response.toss) {
@@ -123,7 +123,7 @@ function confirmToss(toss) {
             {
                 var i = parseInt(iSeed.split("-")[1]);
                 var r = parseInt(rSeed.split("-")[1]);
-            
+
                 // compare the odd/evenness of the addition of the two seed values to the call
                 var sum = (i + r);
                 var result = ((sum % 2 == 0) == entry.call) ? "win" : "loss";
@@ -145,7 +145,7 @@ function confirmToss(toss) {
                 return result;
             }
         }
-    } 
+    }
 
     return "";
 }
@@ -281,7 +281,7 @@ function validate(entry_type, entry, header, sources) {
     return true;
 }
 
-// 
+//
 function validateLink(linkEntryType, baseHash, links, pkg, sources) {
 
     if (linkEntryType == "key_value_link") {
@@ -317,6 +317,3 @@ function validatePutPkg(entry_type)  { return null; }
 function validateModPkg(entry_type)  { return null; }
 function validateDelPkg(entry_type)  { return null; }
 function validateLinkPkg(entry_type) { return null; }
-
-
-
