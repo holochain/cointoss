@@ -1,0 +1,5 @@
+uglifyjs -o ../holochain-api.js ../holochain-api-unminified.js
+cp ../holochain-api.js api/holochain.js
+uglifyjs -o ../mixins/anchors/api/anchors.js ../mixins/anchors/api/anchors.unminified.js
+cp -R ../mixins/anchors/ .
+rm api/*.unminified.js
