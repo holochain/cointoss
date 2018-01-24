@@ -1,52 +1,54 @@
-[
-    {
-        "Convey":"We can set our handle",
-        "Zome": "cointoss",
-        "FnName": "setHandle",
-        "Input": "buffaloBill",
-        "Output": "QmWW5zXtV8jjW9BaFNf7RiPQfKTwVyi4y6wJyYD9vVug3w",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": ""
-    },
-    {
-        "Convey":"We can retrieve our handle",
-        "Zome": "cointoss",
-        "FnName": "getMyHandle",
-        "Input": {},
-        "Output": "buffaloBill",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": ""
-    },
-    {
-        "Convey":"getAgent request on non existent handle returns null",
-        "Zome": "cointoss",
-        "FnName": "getAgent",
-        "Input": "fooHandle",
-        "Output": "null",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": ""
-    },
-    {
-        "Convey":"We can retrieve agent by handle",
-        "Zome": "cointoss",
-        "FnName": "getAgent",
-        "Input": "buffaloBill",
-        "Output": "%agent%",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": ""
-    },
-    {
-        "Convey":"We can retrieve all handles in the directory",
-        "Zome": "cointoss",
-        "FnName": "getHandles",
-        "Input": {},
-        "Output": "[{\"handle\":\"buffaloBill\",\"hash\":\"%agent%\"}]",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": ""
-    }
-]
+{
+    "Tests":[
+        {
+            "Convey":"We can set our handle",
+            "Zome": "cointoss",
+            "FnName": "setHandle",
+            "Input": "buffaloBill",
+            "Output": "QmWW5zXtV8jjW9BaFNf7RiPQfKTwVyi4y6wJyYD9vVug3w",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        },
+        {
+            "Convey":"We can retrieve our handle",
+            "Zome": "cointoss",
+            "FnName": "getMyHandle",
+            "Input": {},
+            "Output": "buffaloBill",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        },
+        {
+            "Convey":"getAgent request on non existent handle returns null",
+            "Zome": "cointoss",
+            "FnName": "getAgent",
+            "Input": "fooHandle",
+            "Output": "null",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        },
+        {
+            "Convey":"We can retrieve agent by handle",
+            "Zome": "cointoss",
+            "FnName": "getAgent",
+            "Input": "buffaloBill",
+            "Output": "%key%",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        },
+        {
+            "Convey":"We can retrieve all handles in the directory",
+            "Zome": "cointoss",
+            "FnName": "getHandles",
+            "Input": {},
+            "Output": [{"handle":"buffaloBill","hash":"%key%"}],
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        }
+    ]
+}

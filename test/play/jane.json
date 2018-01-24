@@ -1,12 +1,14 @@
-[
-    {
-        "Convey":"setup handle: jane",
-        "Zome": "cointoss",
-        "FnName": "setHandle",
-        "Input": "jane",
-        "Output": "QmV2mCvV5Ci9ahTvZkMpACguDvanrGNGfAWh4k2kEaMgaP",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": ""
-    }
- ]
+{
+    "Tests":[
+        {
+            "Convey":"setup handle: jane",
+            "Zome": "cointoss",
+            "FnName": "setHandle",
+            "Input": "jane",
+            "Output": "QmdudhkoPianmv8nUVmLfrUWePqcaNnkFHtxf14TSeffg2",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        }
+    ]
+}

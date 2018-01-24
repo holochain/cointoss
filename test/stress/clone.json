@@ -1,24 +1,27 @@
-[
-    {
-        "Time":2000,
-        "Convey":"get jane's agent key",
-        "Zome": "cointoss",
-        "FnName": "getAgent",
-        "Input": "jane",
-        "Exposure":"public",
-        "Err": "",
-        "Regexp": "(Qm[a-zA-Z0-9]*)"
-    },
-    {
-        "Time":2300,
-        "Wait": 100,
-        "Repeat": 100,
-        "Convey":"request cointoss with jane",
-        "Zome": "cointoss",
-        "FnName": "requestToss",
-        "Input": {"agent":"%m1.1%"},
-        "Exposure":"public",
-        "Err": "",
-        "Output": "{\"toss\":\"%h%\"}"
-    }
-]
+{
+    "Tests":
+    [
+        {
+            "Time":2000,
+            "Convey":"get jane's agent key",
+            "Zome": "cointoss",
+            "FnName": "getAgent",
+            "Input": "jane",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": "(Qm[a-zA-Z0-9]*)"
+        },
+        {
+            "Time":2300,
+            "Wait": 100,
+            "Repeat": 100,
+            "Convey":"request cointoss with jane",
+            "Zome": "cointoss",
+            "FnName": "requestToss",
+            "Input": {"agent":"%m1.1%"},
+            "Exposure":"public",
+            "Err": "",
+            "Output": {"toss":"%h%"}
+        }
+    ]
+}
