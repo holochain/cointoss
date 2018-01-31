@@ -1,0 +1,1 @@
+function createCollective(name){var parms={name:name};return call("cogov","createCollective",parms)}

@@ -1,13 +1,13 @@
 {
-    "Tests":[
+    "Tests": [
         {
             "Convey": "Check getFromList with no parameters 1",
             "Zome": "anchors",
             "FnName": "getFromList",
-            "Input": { },
-            "Output": {"message":"Must pass either anchor or anchorHash!","name":"AnchorsError"},
+            "Input": {},
+            "Output": "",
             "Exposure": "public",
-            "Err": "",
+            "Err": "Must pass either anchor or anchorHash!",
             "Regexp": ""
         },
         {
@@ -15,29 +15,29 @@
             "Zome": "anchors",
             "Raw": true,
             "Input": "JSON.stringify(getFromList());",
-            "Output": "{\"message\":\"Must pass either anchor or anchorHash!\",\"name\":\"AnchorsError\"}",
+            "Output": "",
             "Exposure": "public",
-            "Err": "",
+            "Err": "Error executing JavaScript: Must pass either anchor or anchorHash!",
             "Regexp": ""
         },
         {
             "Convey": "Check addToList with no parameters 1",
             "Zome": "anchors",
             "FnName": "addToList",
-            "Input": { },
-            "Output": {"message":"anchor is a required parameter!","name":"AnchorsError"},
+            "Input": {},
+            "Output": "",
             "Exposure": "public",
-            "Err": "",
+            "Err": "Must pass either anchor or anchorHash!",
             "Regexp": ""
         },
         {
             "Convey": "Check addToList with no parameters 2",
             "Zome": "anchors",
             "FnName": "addToList",
-            "Input": { },
-            "Output": {"message":"anchor is a required parameter!","name":"AnchorsError"},
+            "Input": {},
+            "Output": "",
             "Exposure": "public",
-            "Err": "",
+            "Err": "Must pass either anchor or anchorHash!",
             "Regexp": ""
         },
         {
@@ -45,9 +45,9 @@
             "Zome": "anchors",
             "Raw": true,
             "Input": "JSON.stringify(addToList({ value: 'test_value' }));",
-            "Output": "{\"message\":\"anchor is a required parameter!\",\"name\":\"AnchorsError\"}",
+            "Output": "",
             "Exposure": "public",
-            "Err": "",
+            "Err": "Error executing JavaScript: Must pass either anchor or anchorHash!",
             "Regexp": ""
         },
         {
@@ -55,7 +55,19 @@
             "Zome": "anchors",
             "Raw": true,
             "Input": "JSON.stringify(addToList({ anchor: 'test_anchor' }));",
-            "Output": "{\"message\":\"value is a required parameter!\",\"name\":\"AnchorsError\"}",
+            "Output": "",
+            "Exposure": "public",
+            "Err": "Error executing JavaScript: Must pass either value or valueHash!",
+            "Regexp": ""
+        },
+        {
+            "Convey": "Check getFromList with non-existent key",
+            "Zome": "anchors",
+            "FnName": "getFromList",
+            "Input": {
+                "anchor": "non_existent_key"
+            },
+            "Output": "null",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
@@ -64,18 +76,10 @@
             "Convey": "Check getFromList with non-existent key",
             "Zome": "anchors",
             "FnName": "getFromList",
-            "Input": { "anchor": "non_existent_key" },
-            "Output": null,
-            "Exposure": "public",
-            "Err": "",
-            "Regexp": ""
-        },
-        {
-            "Convey": "Check getFromList with non-existent key",
-            "Zome": "anchors",
-            "FnName": "getFromList",
-            "Input": { "anchor": "non_existent_key" },
-            "Output": null,
+            "Input": {
+                "anchor": "non_existent_key"
+            },
+            "Output": "null",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
@@ -84,8 +88,11 @@
             "Convey": "Add value to list",
             "Zome": "anchors",
             "FnName": "addToList",
-            "Input": { "anchor": "test_list", "value": "test_value" },
-            "Output": "%h2%",
+            "Input": {
+                "anchor": "test_list",
+                "value": "test_value"
+            },
+            "Output": "{\"anchorHash\":\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\",\"linkHash\":\"%h%\",\"valueHash\":\"QmUQCc79iPsjYtz72KZyTRiuH1LJiRiRgKRZH2UwhxqBG5\"}",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
@@ -94,8 +101,10 @@
             "Convey": "get list",
             "Zome": "anchors",
             "FnName": "getFromList",
-            "Input": { "anchor": "test_list" },
-            "Output": ["test_value"],
+            "Input": {
+                "anchor": "test_list"
+            },
+            "Output": "[\"test_value\"]",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
@@ -104,18 +113,23 @@
             "Convey": "Add another value to list",
             "Zome": "anchors",
             "FnName": "addToList",
-            "Input": { "anchor": "test_list", "value": "another_test_value" },
-            "Output": "QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL",
+            "Input": {
+                "anchor": "test_list",
+                "value": "another_test_value"
+            },
+            "Output": "{\"anchorHash\":\"QmQ5j2Ew5J5NpJ9yhJnqTJmD57nK5VJK7Z8SzGwZV5RiJL\",\"linkHash\":\"%h%\",\"valueHash\":\"QmRJ77cbtmVY91JNUSTyNNcpe5nq26yWPCYqALoap93LjC\"}",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
         },
         {
-            "Convey": "Check getFromList with no value to make sure both items come back",
+            "Convey": "Check getFromList with no value or index to make sure both items come back",
             "Zome": "anchors",
             "FnName": "getFromList",
-            "Input": { "anchor": "test_list" },
-            "Output": ["another_test_value","test_value"],
+            "Input": {
+                "anchor": "test_list"
+            },
+            "Output": "[\"another_test_value\",\"test_value\"]",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
@@ -124,18 +138,23 @@
             "Convey": "Check removeFromList",
             "Zome": "anchors",
             "FnName": "removeFromList",
-            "Input": { "anchor": "test_list", "value": "test_value" },
-            "Output": 1,
+            "Input": {
+                "anchor": "test_list",
+                "value": "test_value"
+            },
+            "Output": "1",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
         },
         {
-            "Convey": "Check getFromList with no value to make sure only one item comes back",
+            "Convey": "Check getFromList with no value or index to make sure only one item comes back",
             "Zome": "anchors",
             "FnName": "getFromList",
-            "Input": { "anchor": "test_list" },
-            "Output": ["another_test_value"],
+            "Input": {
+                "anchor": "test_list"
+            },
+            "Output": "[\"another_test_value\"]",
             "Exposure": "public",
             "Err": "",
             "Regexp": ""

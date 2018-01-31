@@ -120,6 +120,11 @@
                 },
                 {
                     "Name": "_anchor_generic_",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "_anchor_string_type_for_testing_",
                     "DataFormat": "string",
                     "Sharing": "public"
                 },
@@ -128,37 +133,172 @@
                     "DataFormat": "json",
                     "Sharing": "public"
                 }
-                ],
-                "Functions": [
+            ],
+            "Functions": [
                 {
                     "Name": "set",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
                     "Name": "get",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
                     "Name": "addToList",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
                     "Name": "getFromList",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
                     "Name": "removeFromList",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
-                    "Name": "makeAnchorHash",
+                    "Name": "initializeAnchor",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "makeAnchorValueHash",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "getAnchorValue",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "testLinksList",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "testAnchors",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                }
+            ]
+        },
+        {
+            "Name": "fork-gov",
+            "Description": "Application Forking Governance",
+            "RibosomeType": "js",
+            "CodeFile": "fork-gov.js",
+            "Entries": [
+                {
+                    "Name": "fork-gov_governor",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "fork-gov_governor_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "fork-gov_app_dev_collective_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                }
+            ],
+            "Functions": [
+                {
+                    "Name": "getForkGovVersion",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "addGovernor",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "getGovernors",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                }
+            ]
+        },
+        {
+            "Name": "cogov",
+            "Description": "New Earth Governance on Holochain - http://cogov.tech",
+            "RibosomeType": "js",
+            "CodeFile": "cogov.js",
+            "Entries": [
+                {
+                    "Name": "cogov_collective",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_collective_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_member",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_member_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_currency",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_currency_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_currency_transaction",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_currency_transaction_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                }
+            ],
+            "Functions": [
+                {
+                    "Name": "getCoGovVersion",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "createCollective",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "createMember",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "createCurrency",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "currencyTransaction",
+                    "CallingType": "json",
+                    "Exposure": "public"
                 }
             ]
         }

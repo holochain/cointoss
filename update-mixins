@@ -1,0 +1,9 @@
+uglifyjs -o ../holochain-api.js ../holochain-api-unminified.js
+cp ../holochain-api.js api/holochain.js
+uglifyjs -o ../mixins/anchors/api/anchors.js ../mixins/anchors/api/anchors.unminified.js
+cp -R ../mixins/anchors/ .
+uglifyjs -o ../mixins/fork-gov/api/fork-gov.js ../mixins/fork-gov/api/fork-gov.unminified.js
+cp -R ../mixins/fork-gov/ .
+uglifyjs -o ../mixins/cogov/api/cogov.js ../mixins/cogov/api/cogov.unminified.js
+cp -R ../mixins/cogov/ .
+rm api/*.unminified.js

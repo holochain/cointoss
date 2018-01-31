@@ -1,0 +1,75 @@
+{
+    "Name": "cogov",
+    "Description": "New Earth Governance on Holochain - http://cogov.tech",
+    "RibosomeType": "js",
+    "CodeFile": "cogov.js",
+    "Entries": [
+        {
+            "Name": "cogov_collective",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_collective_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_member",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_member_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_currency",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_currency_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_currency_transaction",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_currency_transaction_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        }
+    ],
+    "Functions": [
+        {
+            "Name": "getCoGovVersion",
+            "CallingType": "json",
+            "Exposure": "public"
+        },
+        {
+            "Name": "createCollective",
+            "CallingType": "json",
+            "Exposure": "public"
+        },
+        {
+            "Name": "createMember",
+            "CallingType": "json",
+            "Exposure": "public"
+        },
+        {
+            "Name": "createCurrency",
+            "CallingType": "json",
+            "Exposure": "public"
+        },
+        {
+            "Name": "currencyTransaction",
+            "CallingType": "json",
+            "Exposure": "public"
+        }
+    ]
+}
