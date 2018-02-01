@@ -1,1 +1,1 @@
-function createCollective(name){var parms={name:name};return call("cogov","createCollective",parms)}
+function createCollective(name){var parms={name:name};return call("cogov","createCollective",parms)}function addMemberToCollective(collectiveId,agentId){var parms={collectiveId:collectiveId,agentId:agentId};return call("cogov","addMember",parms)}function getCollectiveMembers(collectiveId){var parms={collectiveId:collectiveId};return call("cogov","getMembers",parms)}

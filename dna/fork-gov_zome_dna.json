@@ -5,16 +5,6 @@
     "CodeFile": "fork-gov.js",
     "Entries": [
         {
-            "Name": "fork-gov_governor",
-            "DataFormat": "json",
-            "Sharing": "public"
-        },
-        {
-            "Name": "fork-gov_governor_link",
-            "DataFormat": "links",
-            "Sharing": "public"
-        },
-        {
             "Name": "fork-gov_app_dev_collective_link",
             "DataFormat": "links",
             "Sharing": "public"

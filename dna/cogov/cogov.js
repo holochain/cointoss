@@ -20,19 +20,103 @@ function getCoGovVersion()
 function createCollective(parms)
 {
 
-    var collective = { type: "Collective", name: parms.name };
+    if (parms.name === undefined)
+        throw("createCollective: Parameter 'name' is required!");
 
     var c;
-    try { c = get(makeHash(collective)); } catch(err) {}
+
+    // make sure a Collective with this name doesn't already exist
+    try { c = get(makeHash("cogov_collective", parms.name)); } 
+    catch(err) { if (err.holochainMessage != "hash not found") throw err; }
 
     if (c !== undefined)
-        throw("A Collective with id '" + parms.id + "' already exists!");
+        throw("A Collective with of name '" + parms.name + "' already exists!");
 
-    c = commit("cogov_collective", collective);
+    // create the Collective's entry
+    c = commit("cogov_collective", parms.name);
 
+    // save some details about the collective
+    commit("cogov_item_details_link", { Links: [{ Base: c, Link: commit("cogov_item_details", (new Date()).getUTCDate()), Tag: "cogov_item_details_collective_created" }]});
+
+    // add a link to the Collective on the app's DNA
     commit("cogov_collective_link", { Links: [{ Base: App.DNA.Hash, Link: c, Tag: "cogov_collective" }]});
 
     return c;
+}
+
+function addMember(parms)
+{
+
+    if (parms.collectiveId === undefined)
+        throw("createCollective: Parameter 'collectiveId' is required!");
+
+    if (parms.agentId === undefined)
+        throw("createCollective: Parameter 'agentId' is required!");
+
+    confirmCollective(parms.collectiveId);
+
+    var m = makeHash("cogov_member", parms.agentId);
+    var members = [];
+
+    // make sure the agentId isn't aleady a member
+    try { members = getLinks(parms.collectiveId, "cogov_member", { }) } 
+    catch(err) { if (err.holochainMessage != "No links for cogov_member") throw err; }
+
+    for(var x=0; x < members.length; x++)
+        if (members[x].Hash == m)
+            throw "AgentId '" + parms.agentId + "' is already a member of the Collective!";
+
+    // create the member entry
+    m = commit("cogov_member", parms.agentId);
+
+    // save some details about the member
+    commit("cogov_item_details_link", { Links: [{ Base: m, Link: commit("cogov_item_details", (new Date()).getUTCDate()), Tag: "cogov_item_details_collective_created" }]});
+
+    // add a link to the Member on the Collective's entry
+    commit("cogov_member_link", { Links: [{ Base: parms.collectiveId, Link: m, Tag: "cogov_member" }]});
+
+    return m;
+        
+}
+
+function getMembers(parms)
+{
+    if (parms.collectiveId === undefined)
+        throw("getMembers: Parameter 'collectiveId' is required!");
+
+    confirmCollective(parms.collectiveId);
+
+    var rtn = [];
+
+    try { var members = getLinks(parms.collectiveId, "cogov_member", { Load: true }); }
+    catch(err) { debug(err); throw err; }
+
+    for(var x=0; x < members.length; x++)
+        rtn.push(members[x].Entry);
+
+    return rtn;
+    
+}
+
+/*************
+HELPEFR METHODS
+**************/
+
+function confirmCollective(collectiveId)
+{
+    // make sure the entry exists
+    try { var entryType = get(collectiveId, { GetMask: HC.GetMask.EntryType }); } 
+    catch(err)
+    { 
+        if (err.holochainMessage == "hash not found") 
+            throw "Collective with Id '" + collectiveId + "' does not exist";
+        else 
+            throw err;
+    }
+
+    // make sure it is a cogov_collective entry type
+    if (entryType != "cogov_collective")
+        throw "Entry with hash '" + collectiveId + "' is not a cogov_collective entry!";
 }
 
 /*************
@@ -44,17 +128,44 @@ function validatePut(entry_type, entry, header, pkg, sources) {
 function validateCommit(entry_type, entry, header, pkg, sources) {
     return validate(entry_type, entry, header, sources);
 }
-function validate(entry_type, entry, header, sources) {
-    if (entry_type == "cogov_collective" || entry_type == "cogov_collective_link") {
+function validate(entry_type, entry, header, sources)
+{
+    debug("cogov validate:" + entry_type)
+
+    if (entry_type == "cogov_collective")
         return true;
-    }
+
+    if (entry_type == "cogov_collective_link")
+        return true;
+
+    if (entry_type == "cogov_item_details")
+        return true;
+
+    if (entry_type == "cogov_item_details_link")
+        return true;
+
+    if (entry_type == "cogov_member")
+        return true;
+
+    if (entry_type == "cogov_member_link")
+        return true;
 
     return false;
 }
 
-function validateLink(linkingEntryType, baseHash, linkHash, tag, pkg, sources) {
-    if (linkingEntryType == "fork-gov_governor_link")
+function validateLink(linkingEntryType, baseHash, linkHash, tag, pkg, sources)
+{
+    debug("cogov validateLink:" + linkingEntryType)
+    
+    if (linkingEntryType == "cogov_item_details_link")
         return true;
+
+    if (linkingEntryType == "cogov_collective_link")
+        return true;
+
+    if (linkingEntryType == "cogov_member_link")
+        return true;
+
     return false;
 }
 

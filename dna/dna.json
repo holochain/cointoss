@@ -234,6 +234,16 @@
             "CodeFile": "cogov.js",
             "Entries": [
                 {
+                    "Name": "cogov_item_details",
+                    "DataFormat": "json",
+                    "Sharing": "public"
+                },
+                {
+                    "Name": "cogov_item_details_link",
+                    "DataFormat": "links",
+                    "Sharing": "public"
+                },
+                {
                     "Name": "cogov_collective",
                     "DataFormat": "json",
                     "Sharing": "public"
@@ -286,7 +296,12 @@
                     "Exposure": "public"
                 },
                 {
-                    "Name": "createMember",
+                    "Name": "addMember",
+                    "CallingType": "json",
+                    "Exposure": "public"
+                },
+                {
+                    "Name": "getMembers",
                     "CallingType": "json",
                     "Exposure": "public"
                 },

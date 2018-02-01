@@ -5,7 +5,7 @@
             "Zome": "fork-gov",
             "FnName": "getGovernors",
             "Input": { },
-            "Output": [{"AgentHash":"Qme4Q2CHkqBLhGAppZBzU6MAt2aBGP6pt1MiPkSQ3xiXSg"}],
+            "Output": ["%agent%"],
             "Exposure": "public"
         }
     ]
