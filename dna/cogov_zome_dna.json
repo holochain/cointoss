@@ -53,6 +53,46 @@
             "Name": "cogov_currency_transaction_link",
             "DataFormat": "links",
             "Sharing": "public"
+        },
+        {
+            "Name": "cogov_ledger",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_ledger_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_proposal",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_proposal_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_action",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_action_link",
+            "DataFormat": "links",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_action_result",
+            "DataFormat": "json",
+            "Sharing": "public"
+        },
+        {
+            "Name": "cogov_action_result_link",
+            "DataFormat": "links",
+            "Sharing": "public"
         }
     ],
     "Functions": [

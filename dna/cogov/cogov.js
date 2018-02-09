@@ -1,10 +1,10 @@
 /*
-    Fork-Gov provides some basic means of governing the evolution of your application
+    CoGov is the software implementation of The Digital Co-Governance Web (http://CoGov.tech) 
     
-    For details, see: https://github.com/Holochain/mixins/wiki/CoGov
+    For programming details, see: https://github.com/Holochain/mixins/wiki/CoGov
 */
 
-/* Holocain API */ var _core_remove=remove;remove=function(a,b){return checkForError("remove",_core_remove(a,b))};var _core_makeHash=makeHash;makeHash=function(a,b){return checkForError("makeHash",_core_makeHash(a,b))};var _core_debug=debug;debug=function(a){return checkForError("debug",_core_debug(JSON.stringify(a)))};var _core_call=call;call=function(a,b,c){return __holochain_api_check_for_json(checkForError("call",_core_call(a,b,c)))};var _core_commit=commit;commit=function(a,b){return checkForError("commit",_core_commit(a,b))};var _core_get=get;get=function(a,b){return __holochain_api_check_for_json(checkForError("get",b===undefined?_core_get(a):_core_get(a,b)))};var _core_getLinks=getLinks;getLinks=function(a,b,c){return checkForError("getLinks",_core_getLinks(a,b,c))};var _core_send=send;send=function(a,b,c){return __holochain_api_check_for_json(checkForError("send",c===undefined?_core_send(a,b):_core_send(a,b,c)))};function __holochain_api_check_for_json(rtn){try{rtn=JSON.parse(rtn)}catch(err){}return rtn}function checkForError(func,rtn){if(typeof rtn==="object"&&rtn.name=="HolochainError"){var errsrc=new getErrorSource(4);var message='HOLOCHAIN ERROR! "'+rtn.message.toString()+'" on '+func+(errsrc.line===undefined?"":" in "+errsrc.functionName+" at line "+errsrc.line+", column "+errsrc.column);throw{name:"HolochainError",function:func,message:message,holochainMessage:rtn.message,source:errsrc,toString:function(){return this.message}}}return rtn}function getErrorSource(depth){try{throw new Error}catch(e){var line=e.stack.split("\n")[depth];var reg=/at (.*) \(.*:(.*):(.*)\)/g.exec(line);if(reg){this.functionName=reg[1];this.line=reg[2];this.column=reg[3]}}}
+/* Holocain API */ var _core_remove=remove;remove=function(a,b){return checkForError("remove",_core_remove(a,b))};var _core_makeHash=makeHash;makeHash=function(a,b){return checkForError("makeHash",_core_makeHash(a,b))};var _core_debug=debug;debug=function(a){return checkForError("debug",_core_debug(JSON.stringify(a)))};var _core_call=call;call=function(a,b,c){return __holochain_api_check_for_json(checkForError("call",_core_call(a,b,c)))};var _core_commit=commit;commit=function(a,b){return checkForError("commit",_core_commit(a,b))};var _core_get=get;get=function(a,b){return __holochain_api_check_for_json(checkForError("get",b===undefined?_core_get(a):_core_get(a,b)))};var _core_getLinks=getLinks;getLinks=function(a,b,c){return checkForError("getLinks",_core_getLinks(a,b,c))};var _core_send=send;send=function(a,b,c){return __holochain_api_check_for_json(checkForError("send",c===undefined?_core_send(a,b):_core_send(a,b,c)))};function __holochain_api_check_for_json(rtn){try{rtn=JSON.parse(rtn)}catch(err){}return rtn}function checkForError(func,rtn){if(typeof rtn==="object"&&rtn.name=="HolochainError"){var errsrc=new getErrorSource(4);var message='HOLOCHAIN ERROR! "'+rtn.message.toString()+'" on '+func+(errsrc.line===undefined?"":" in "+errsrc.functionName+" at line "+errsrc.line+", column "+errsrc.column+"\n\n"+errsrc.stack);throw{name:"HolochainError",function:func,message:message,holochainMessage:rtn.message,source:errsrc,toString:function(){return this.message}}}return rtn}function getErrorSource(depth){try{throw new Error}catch(e){var line=e.stack.split("\n")[depth];var reg=/at (.*) \(.*:(.*):(.*)\)/g.exec(line);if(reg){this.functionName=reg[1];this.line=reg[2];this.column=reg[3];this.stack=e.stack}}}
 
 function genesis() {
     return true;
@@ -30,22 +30,77 @@ function createCollective(parms)
     catch(err) { if (err.holochainMessage != "hash not found") throw err; }
 
     if (c !== undefined)
-        throw("A Collective with of name '" + parms.name + "' already exists!");
+        throw("A Collective with of name '" + parms.name + "' already exists in this app!");
 
     // create the Collective's entry
     c = commit("cogov_collective", parms.name);
 
     // save some details about the collective
-    commit("cogov_item_details_link", { Links: [{ Base: c, Link: commit("cogov_item_details", (new Date()).getUTCDate()), Tag: "cogov_item_details_collective_created" }]});
+    commitItemDetails(c, "created", getNow());
 
     // add a link to the Collective on the app's DNA
     commit("cogov_collective_link", { Links: [{ Base: App.DNA.Hash, Link: c, Tag: "cogov_collective" }]});
+
+    // create the Primary Ledger for this Collective
+    l = commit("cogov_ledger", "Primary Ledger for " + parms.name);
+
+    // save some details about the collective
+    commitItemDetails(l, "created", getNow());
+
+    // add a link to the Ledger on the Collective's entry
+    commit("cogov_ledger_link", { Links: [{ Base: c, Link: l, Tag: "ledger_primary" }] })
 
     return c;
 }
 
 function addMember(parms)
 {
+    return addAction("add_member", parms);
+}
+
+function addAction(type, parms)
+{
+    if (parms.collectiveId === undefined)
+        throw(type + ": Parameter 'collectiveId' is required!");
+
+    var now = getNow();
+
+    // if ledger is null, use the Collective's primary ledger
+    if (parms.ledgerId === undefined)
+        parms.ledgerId = getLinks(parms.collectiveId, "ledger_primary", {})[0].Hash;
+
+    validateAction(type, parms);
+
+    // instatiate the action
+    var action = { type: type, parms: parms, timeStamp: now };
+
+    // commit the action
+    var a = commit("cogov_action", action);
+
+    // save some details about the action (timestamp repeated as a link for consistency)
+    commitItemDetails(a, "created", now);
+
+    // add a link to the Action on the Collective's Ledger
+    commit("cogov_action_link", { Links: [{ Base: parms.ledgerId, Link: a, Tag: "action" }]});
+
+    action.id = a;
+
+    return performAction(action);
+
+}
+
+function validateAction(type, parms)
+{
+    if (type == "add_member")
+        return validateAddMember(parms);
+
+    throw("validateAction: unknown type: '" + type + "'!")
+}
+
+function validateAddMember(parms)
+{
+    if (getMembers(parms).length > 0)
+        checkAuthorization("addMember", parms);
 
     if (parms.collectiveId === undefined)
         throw("createCollective: Parameter 'collectiveId' is required!");
@@ -66,17 +121,31 @@ function addMember(parms)
         if (members[x].Hash == m)
             throw "AgentId '" + parms.agentId + "' is already a member of the Collective!";
 
+}
+
+function performAction(action)
+{
+    if (action.type == "add_member")
+        return performAddMember(action);
+
+    throw("performAction: unknown type: '" + action.type + "'!")
+
+}
+
+function performAddMember(action)
+{
     // create the member entry
-    m = commit("cogov_member", parms.agentId);
+    m = commit("cogov_member", action.parms.agentId);
 
     // save some details about the member
-    commit("cogov_item_details_link", { Links: [{ Base: m, Link: commit("cogov_item_details", (new Date()).getUTCDate()), Tag: "cogov_item_details_collective_created" }]});
+    commitItemDetails(m, "created", getNow());
+    commitItemDetails(m, "actionId", action.id);
 
     // add a link to the Member on the Collective's entry
-    commit("cogov_member_link", { Links: [{ Base: parms.collectiveId, Link: m, Tag: "cogov_member" }]});
+    commit("cogov_member_link", { Links: [{ Base: action.parms.collectiveId, Link: m, Tag: "cogov_member" }]});
 
     return m;
-        
+    
 }
 
 function getMembers(parms)
@@ -86,10 +155,12 @@ function getMembers(parms)
 
     confirmCollective(parms.collectiveId);
 
-    var rtn = [];
+    var members = [];
 
     try { var members = getLinks(parms.collectiveId, "cogov_member", { Load: true }); }
-    catch(err) { debug(err); throw err; }
+    catch(err) { if (err.holochainMessage !== "No links for cogov_member") throw err; }
+
+    var rtn = [];
 
     for(var x=0; x < members.length; x++)
         rtn.push(members[x].Entry);
@@ -99,7 +170,7 @@ function getMembers(parms)
 }
 
 /*************
-HELPEFR METHODS
+HELPER METHODS
 **************/
 
 function confirmCollective(collectiveId)
@@ -117,6 +188,17 @@ function confirmCollective(collectiveId)
     // make sure it is a cogov_collective entry type
     if (entryType != "cogov_collective")
         throw "Entry with hash '" + collectiveId + "' is not a cogov_collective entry!";
+}
+
+function commitItemDetails(base, name, value)
+{
+    commit("cogov_item_details_link", { Links: [{ Base: base, Link: commit("cogov_item_details", { name: name, value: value }), Tag: "cogov_item_details_" + name }]});
+
+}
+
+function getNow()
+{
+    return (new Date()).getUTCDate();
 }
 
 /*************
@@ -150,6 +232,18 @@ function validate(entry_type, entry, header, sources)
     if (entry_type == "cogov_member_link")
         return true;
 
+    if (entry_type == "cogov_ledger")
+        return true;
+
+    if (entry_type == "cogov_ledger_link")
+        return true;
+
+    if (entry_type == "cogov_action")
+        return true;
+
+    if (entry_type == "cogov_action_link")
+        return true;
+
     return false;
 }
 
@@ -164,6 +258,12 @@ function validateLink(linkingEntryType, baseHash, linkHash, tag, pkg, sources)
         return true;
 
     if (linkingEntryType == "cogov_member_link")
+        return true;
+
+    if (linkingEntryType == "cogov_action_link")
+        return true;
+
+    if (linkingEntryType == "cogov_ledger_link")
         return true;
 
     return false;

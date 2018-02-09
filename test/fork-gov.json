@@ -1,7 +1,7 @@
 {
     "Tests":[
         {
-            "Convey": "getGovernors",
+            "Convey": "We are the governor",
             "Zome": "fork-gov",
             "FnName": "getGovernors",
             "Input": { },
