@@ -235,7 +235,7 @@
             "FnName": "set",
             "Input": { "anchor": "test_key_non_generic_string", "entryType": "anchor_base", "value": {"name": "object", "value": "test_value5" } },
             "Exposure": "public",
-            "Err": "HOLOCHAIN ERROR! \"argument 2 (entry) should be string\" on commit in set at line 78, column 22",
+            "Err": "HOLOCHAIN ERROR! \"argument 2 (entry) should be string\" on commit in set at line 82, column 22",
             "Regexp": ""
         }
     ]

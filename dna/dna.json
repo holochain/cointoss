@@ -19,6 +19,7 @@
             "Name": "cointoss",
             "Description": "zome that uses n2n for co-signing of a coin toss",
             "RibosomeType": "js",
+            "Config":{"returnErrors":true},
             "CodeFile": "cointoss.js",
             "Entries": [
                 {
@@ -106,6 +107,7 @@
             "Name": "anchors",
             "Description": "Anchor zome",
             "RibosomeType": "js",
+            "Config":{"returnErrors":true},
             "CodeFile": "anchors.js",
             "Entries": [
                 {
