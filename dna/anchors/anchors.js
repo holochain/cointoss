@@ -11,15 +11,6 @@
         - Can't use one call to removeFromList to remove multiple entries of same value but having different entry types
 */
 
-// ********************************************************************************************************
-// Holochain API
-// since the virtual javascript environment (Auto) doesn't allow errors to be thrown, errors are returned
-// as an object with a property of name set to "HolochainError". Therefore, we override all core Holochain
-// functions and if there was an error object returned, we throw it instead
-// ********************************************************************************************************
-var _core_remove=remove;remove=function(a,b){return checkForError("remove",_core_remove(a,b))};var _core_makeHash=makeHash;makeHash=function(a,b){return checkForError("makeHash",_core_makeHash(a,b))};var _core_debug=debug;debug=function(a){return checkForError("debug",_core_debug(a))};var _core_call=call;call=function(a,b,c){return checkForError("call",_core_call(a,b,c))};var _core_commit=commit;commit=function(a,b){return checkForError("commit",_core_commit(a,b))};var _core_get=get;get=function(a,b){return checkForError("get",b===undefined?_core_get(a):_core_get(a,b))};var _core_getLinks=getLinks;getLinks=function(a,b,c){return checkForError("getLinks",_core_getLinks(a,b,c))};function checkForError(func,rtn){if(typeof rtn==="object"&&rtn.name=="HolochainError"){var errsrc=new getErrorSource(4);var message='HOLOCHAIN ERROR! "'+rtn.message+'" on '+func+(errsrc.line===undefined?"":" in "+errsrc.functionName+" at line "+errsrc.line+", column "+errsrc.column);throw{name:"HolochainError",function:func,message:message,holochainMessage:rtn.message,source:errsrc,toString:function(){return this.message}}}return rtn}function getErrorSource(depth){try{throw new Error}catch(e){var line=e.stack.split("\n")[depth];var reg=/at (.*) \(.*:(.*):(.*)\)/g.exec(line);if(reg){this.functionName=reg[1];this.line=reg[2];this.column=reg[3]}}}
-// ********************************************************************************************************
-
 var _anchor_generic_ = "_anchor_generic_";
 
 function genesis() {
@@ -54,17 +45,14 @@ function set(parms) {
 
     catch (err) // getLink got an error
     {
-        if (err.holochainMessage == "hash not found") // hash not found, create the base entry, and continue with empty links list
+        if (err.errorMessage == "hash not found") // hash not found, create the base entry, and continue with empty links list
         {
             var anchor_hash = commit("anchor_base", anchor);
             links = [];
             newAnchor = true;
         }
-        else if (err.holochainMessage == "No links for " + _anchor_generic_)
-            return new errorObject("\"" + anchor + "\" is not a simple anchor link base!");
         else
             throw err; // other error, throw it
-
     }
 
     if (links.length != 1 && !newAnchor) // an existing Key/Value base entry will only always have just 1 link entry, no more, no less
@@ -115,11 +103,8 @@ var get = function get(parms) {
     try { var links = getLinks(anchorHash, _anchor_generic_, { Load: true }); }
 
     catch (err) {
-        if (err.holochainMessage == "hash not found")
+        if (err.errorMessage == "hash not found")
             return null;
-        else if (err.holochainMessage == "No links for " + _anchor_generic_)
-            return new errorObject("\"" + anchor + "\" is not a simple anchor link base!");
-
         throw err;
     }
 
@@ -157,18 +142,13 @@ function addToList(parms) {
 
     catch (err) // getLink got an error
     {
-        if (err.holochainMessage == "hash not found") // hash not found, create the base entry, and continue with empty links list
+        if (err.errorMessage == "hash not found") // hash not found, create the base entry, and continue with empty links list
         {
             var anchor_hash = commit("anchor_base", anchor);
 
             if (isErr(anchor_hash)) // failed
                 return anchor_hash;
 
-            links = [];
-        }
-        else if (err.holochainMessage == "No links for " + (index === undefined ? "" : index)) // an index was specified and it doesn't exist
-        {
-            var x = "x"; // do nothing because that is just fine!
             links = [];
         }
         else {
@@ -222,14 +202,17 @@ function getFromList(parms) {
 
     catch (err)// failed
     {
-        if (err.holochainMessage == "hash not found")
+        if (err.errorMessage == "hash not found")
             return null;
-        else if (err.holochainMessage == ("No links for " + (index === undefined ? "" : index))) // an index was specified and it doesn't exist
+        else if (err.errorMessage == ("No links for " + (index === undefined ? "" : index))) // an index was specified and it doesn't exist
             return index === undefined ? [] : null;
         else
             throw err;
     }
 
+    if (links.length==0) {
+        return index === undefined ? [] : null;
+    }
     var rtn;
 
     if (index === undefined) { // an index was not specified
@@ -382,11 +365,6 @@ function errorObject(errorText) {
     function toString() {
         return this.message;
     }
-}
-
-// helper function to determine if value returned from holochain function is an error
-function isErr(result) {
-    return ((typeof result === 'object') && result.name == "HolochainError");
 }
 
 

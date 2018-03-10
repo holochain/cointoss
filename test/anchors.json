@@ -85,7 +85,7 @@
             "Zome": "anchors",
             "Raw": true,
             "Input": "JSON.stringify(get({ 'anchor': 'prexisting_entry' }));",
-            "Output": "{\"message\":\"\\\"prexisting_entry\\\" is not a simple anchor link base!\",\"name\":\"AnchorsError\"}",
+            "Output": {"message":"\"prexisting_entry\" is not a simple anchor link base because it has 0 links!","name":"AnchorsError"},
             "Exposure": "public",
             "Err": "",
             "Regexp": ""
@@ -146,7 +146,7 @@
             "Raw": true,
             "Input": "coreGet(makeHash('_anchor_generic_', JSON.stringify('test_value')));",
             "Exposure": "public",
-            "Err": "Error executing JavaScript: HOLOCHAIN ERROR! \"hash deleted\" on get",
+            "Err": {"errorMessage":"hash deleted","function":"get","name":"HolochainError","source":{}},
             "Regexp": ""
         },
         {
@@ -235,7 +235,7 @@
             "FnName": "set",
             "Input": { "anchor": "test_key_non_generic_string", "entryType": "anchor_base", "value": {"name": "object", "value": "test_value5" } },
             "Exposure": "public",
-            "Err": "HOLOCHAIN ERROR! \"argument 2 (entry) should be string\" on commit in set at line 82, column 22",
+            "Err": {"errorMessage":"argument 2 (entry) should be string","function":"commit","name":"HolochainError","source":{"column":"22","functionName":"set","line":"102"}},
             "Regexp": ""
         }
     ]
