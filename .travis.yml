@@ -10,10 +10,6 @@ env:
 services:
   - docker
 before_install:
-  - cd ui-src
-  - yarn install
-  - yarn build
-  - cd ..
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
     -s`-`uname -m` > docker-compose
@@ -22,26 +18,10 @@ before_install:
   - TARGETDIR=$(pwd) docker-compose up -d
 script:
   - docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev test"
-  - docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev scenario collisionOfHandles"
-  - docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev scenario followAndShare"
-  - cd ui-automation
-  - npm install
-  - npm test
-  - cd ..
-  - cd ui-src
-  - npm run release:files
-  - PACKAGE_NAME=$(node -p -e "require('./package.json').name")
-  - PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-  - cd ..
-  - cd release
-  - ls
-  - zip -r $PACKAGE_NAME-$PACKAGE_VERSION.zip .
-  - pwd
+  - docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev scenario play"
+  - docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev scenario stress"
   - docker-compose kill
   - docker-compose down
-cache:
-  directories:
-  - ui-automation/node_modules
 deploy:
   provider: releases
   api_key: $GITHUB_OAUTH_TOKEN
