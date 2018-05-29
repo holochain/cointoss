@@ -1,8 +1,8 @@
 {
-    "Version": 0,
+    "Version": 1,
     "UUID": "00000000-0000-0000-0000-000000000000",
     "Name": "cointoss",
-    "RequiresVersion": 21,
+    "RequiresVersion": 25,
     "Properties": {
         "description": "sample n2n app",
         "language": "en"
@@ -11,20 +11,28 @@
     "DHTConfig": {
         "HashType": "sha2-256"
     },
-    "BasedOn": {
-        "H": null
-    },
     "Zomes": [
         {
             "Name": "cointoss",
             "Description": "zome that uses n2n for co-signing of a coin toss",
             "RibosomeType": "js",
             "CodeFile": "cointoss.js",
+            "Config": {
+                "ErrorHandling": "throwErrors"
+            },
             "Entries": [
                 {
                     "Name": "handle",
                     "DataFormat": "string",
                     "Sharing": "public"
+                },
+                {
+                    "Name": "handle_links",
+                    "DataFormat": "links"
+                },
+                {
+                    "Name": "directory_links",
+                    "DataFormat": "links"
                 },
                 {
                     "Name": "toss",
@@ -104,63 +112,42 @@
         },
         {
             "Name": "anchors",
-            "Description": "Anchor zome",
+            "Description": "anchors mixin",
             "RibosomeType": "js",
             "CodeFile": "anchors.js",
+            "Config": {
+                "ErrorHandling": "throwErrors"
+            },
             "Entries": [
                 {
-                    "Name": "anchor_base",
-                    "DataFormat": "string",
+                    "Name": "anchor",
+                    "DataFormat": "json",
+                    "SchemaFile": "anchor.json",
                     "Sharing": "public"
                 },
                 {
                     "Name": "anchor_link",
-                    "DataFormat": "links",
-                    "Sharing": "public"
-                },
-                {
-                    "Name": "_anchor_generic_",
-                    "DataFormat": "string",
-                    "Sharing": "public"
-                },
-                {
-                    "Name": "_anchor_json_type_for_testing_",
-                    "DataFormat": "json",
-                    "Sharing": "public"
+                    "DataFormat": "links"
                 }
-                ],
-                "Functions": [
+            ],
+            "Functions": [
                 {
-                    "Name": "set",
+                    "Name": "anchor",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
-                    "Name": "get",
+                    "Name": "exists",
                     "CallingType": "json",
-                    "Exposure":"public"
+                    "Exposure": "public"
                 },
                 {
-                    "Name": "addToList",
-                    "CallingType": "json",
-                    "Exposure":"public"
-                },
-                {
-                    "Name": "getFromList",
-                    "CallingType": "json",
-                    "Exposure":"public"
-                },
-                {
-                    "Name": "removeFromList",
-                    "CallingType": "json",
-                    "Exposure":"public"
-                },
-                {
-                    "Name": "makeAnchorHash",
-                    "CallingType": "json",
-                    "Exposure":"public"
+                    "Name": "anchors",
+                    "CallingType": "string",
+                    "Exposure": "public"
                 }
             ]
         }
+
     ]
 }
