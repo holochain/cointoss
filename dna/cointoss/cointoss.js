@@ -1,7 +1,5 @@
 /* Holochain API */ var _core_remove=remove;remove=function(a,b){return checkForError("remove",_core_remove(a,b))};var _core_makeHash=makeHash;makeHash=function(a,b){return checkForError("makeHash",_core_makeHash(a,b))};var _core_debug=debug;debug=function(a){return checkForError("debug",_core_debug(a))};var _core_call=call;call=function(a,b,c){return checkForError("call",_core_call(a,b,c))};var _core_commit=commit;commit=function(a,b){return checkForError("commit",_core_commit(a,b))};var _core_get=get;get=function(a,b){return checkForError("get",b===undefined?_core_get(a):_core_get(a,b))};var _core_getLinks=getLinks;getLinks=function(a,b,c){return checkForError("getLinks",_core_getLinks(a,b,c))};var _core_send=send;send=function(a,b,c){return checkForError("send",c===undefined?_core_send(a,b):_core_send(a,b,c))};function checkForError(func,rtn){if(typeof rtn==="object"&&rtn.name=="HolochainError"){var errsrc=new getErrorSource(4);var message='HOLOCHAIN ERROR! "'+rtn.message.toString()+'" on '+func+(errsrc.line===undefined?"":" in "+errsrc.functionName+" at line "+errsrc.line+", column "+errsrc.column);throw{name:"HolochainError",function:func,message:message,holochainMessage:rtn.message,source:errsrc,toString:function(){return this.message}}}return rtn}function getErrorSource(depth){try{throw new Error}catch(e){var line=e.stack.split("\n")[depth];var reg=/at (.*) \(.*:(.*):(.*)\)/g.exec(line);if(reg){this.functionName=reg[1];this.line=reg[2];this.column=reg[3]}}}
 
-/* Anchors API  function postCallProcess(rtn){return JSON.parse(rtn)}function setAnchor(anchor,value,entryType,preserveOldValueEntry){var parms={anchor:anchor,value:value};if(entryType!==undefined)parms.entryType=entryType;if(preserveOldValueEntry!==undefined)parms.preserveOldValueEntry=preserveOldValueEntry;return postCallProcess(call("anchors","set",parms))}function getAnchor(anchor,index,anchorHash){var parms={anchor:anchor};if(index!==undefined)parms.index=index;if(anchorHash!==undefined)parms.anchorHash=anchorHash;return postCallProcess(call("anchors","get",parms))}function addToListAnchor(anchor,value,entryType,index,preserveOldValueEntry){var parms={anchor:anchor,value:value};if(entryType!==undefined)parms.entryType=entryType;if(index!==undefined)parms.index=index;if(preserveOldValueEntry!==undefined)parms.preserveOldValueEntry=preserveOldValueEntry;return postCallProcess(call("anchors","addToList",parms))}function getFromListAnchor(anchor,index,anchorHash){var parms={anchor:anchor};if(index!==undefined)parms.index=index;if(anchorHash!==undefined)parms.anchorHash=anchorHash;return postCallProcess(call("anchors","getFromList",parms))}function removeFromListAnchor(anchor,value,entryType,index,preserveOldValueEntry,anchorHash,valueHash){var parms={anchor:anchor};if(value!==undefined)parms.value=value;if(entryType!==undefined)parms.entryType=entryType;if(index!==undefined)parms.index=index;if(preserveOldValueEntry!==undefined)parms.preserveOldValueEntry=preserveOldValueEntry;if(anchorHash!==undefined)parms.anchorHash=anchorHash;if(valueHash!==undefined)parms.valueHash=valueHash;return postCallProcess(call("anchors","removeFromList",parms))}function makeAnchorHash(value,entryType){var parms={value:value};if(entryType!==undefined)parms.entryType=entryType;return postCallProcess(call("anchors","makeAnchorHash",parms))}
-*/
 
 function anchor(anchorType, anchorText) {
   return call('anchors', 'anchor', {
@@ -34,38 +32,7 @@ function whoAmI()
 // Handles / Anchors
 // ===============================================================================
 
-// function handleHash(appKeyHash) {
-//   // debug('appKeyHash ' + appKeyHash)
-//   if (appKeyHash === undefined) {
-//     appKeyHash = App.Key.Hash;
-//   }
-//   return getLinks(appKeyHash, 'handle', { Load: true })[0].Entry.replace(
-//     /"/g,
-//     ''
-//   );
-// }
-
-
 // set the handle of this node
-// function setHandle(handle) {
-//     debug("setHandle: " + handle);
-//     // get old handle (if any)
-//     var oldHandle = getAnchor(Me + ":handle");
-//
-//     // if there was one, remove old handle from directory by index
-//     if (oldHandle != null)
-//     {
-//       removeFromListAnchor("userDirectory", undefined, undefined, oldHandle);
-//     }
-//     // set handle
-//     setAnchor(Me + ":handle", handle);
-//
-//     // Add the new handle to the directory
-//     addToListAnchor("userDirectory", Me, undefined, handle);
-//     return makeAnchorHash(handle);
-// }
-
-
 function setHandle(handle) {
   debug(
     '<mermaid>' +
@@ -181,34 +148,11 @@ function setHandle(handle) {
 }
 
 
-// returns all the handles in the directory
-// function getHandles() {
-//     var rtn = getFromListAnchor("userDirectory");
-//     handles = [];
-//
-//     for(var x=0; x < rtn.length; x++)
-//         handles.push({ handle: rtn[x].index, hash: rtn[x].value });
-//
-//     handles.sort(function (a, b) {
-//         if (a.handle < b.handle)
-//             return -1;
-//         if (a.handle > b.handle)
-//             return 1;
-//         return 0;
-//     });
-//     return handles;
-// }
-
-
 // returns the current handle of this node
 function getMyHandle() {
     return getHandle(Me);
 }
 
-// returns the handle of an agent
-// function getHandle(userHash) {
-//     return getAnchor(userHash + ":handle");
-// }
 
 // returns the handle of an agent by looking it up on the user's DHT entry, the last handle will be the current one?
 function getHandle(agentKey) {
@@ -222,12 +166,9 @@ function getHandle(agentKey) {
   }
 }
 
-function getHandles() {
-  // debug('get the handles');
-  // if (property('enableDirectoryAccess') != 'true') {
-  //   return undefined;
-  // }
 
+// returns all the handles in the directory
+function getHandles() {
   var links = getLinks(App.DNA.Hash, 'directory', { Load: true });
   // debug(links);
   var handles = [];
@@ -242,11 +183,6 @@ function getHandles() {
 
 
 // gets the AgentID (userAddress) based on handle
-// function getAgent(handle) {
-//     debug("getAgent: " + handle);
-//     return getFromListAnchor("userDirectory", handle);
-// }
-
 function getAgent(handle) {
   if (anchorExists('handle', handle) === 'false') {
     return '';
