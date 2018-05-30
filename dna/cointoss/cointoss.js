@@ -1,21 +1,3 @@
-/* Holochain API */ var _core_remove=remove;remove=function(a,b){return checkForError("remove",_core_remove(a,b))};var _core_makeHash=makeHash;makeHash=function(a,b){return checkForError("makeHash",_core_makeHash(a,b))};var _core_debug=debug;debug=function(a){return checkForError("debug",_core_debug(a))};var _core_call=call;call=function(a,b,c){return checkForError("call",_core_call(a,b,c))};var _core_commit=commit;commit=function(a,b){return checkForError("commit",_core_commit(a,b))};var _core_get=get;get=function(a,b){return checkForError("get",b===undefined?_core_get(a):_core_get(a,b))};var _core_getLinks=getLinks;getLinks=function(a,b,c){return checkForError("getLinks",_core_getLinks(a,b,c))};var _core_send=send;send=function(a,b,c){return checkForError("send",c===undefined?_core_send(a,b):_core_send(a,b,c))};function checkForError(func,rtn){if(typeof rtn==="object"&&rtn.name=="HolochainError"){var errsrc=new getErrorSource(4);var message='HOLOCHAIN ERROR! "'+rtn.message.toString()+'" on '+func+(errsrc.line===undefined?"":" in "+errsrc.functionName+" at line "+errsrc.line+", column "+errsrc.column);throw{name:"HolochainError",function:func,message:message,holochainMessage:rtn.message,source:errsrc,toString:function(){return this.message}}}return rtn}function getErrorSource(depth){try{throw new Error}catch(e){var line=e.stack.split("\n")[depth];var reg=/at (.*) \(.*:(.*):(.*)\)/g.exec(line);if(reg){this.functionName=reg[1];this.line=reg[2];this.column=reg[3]}}}
-
-
-function anchor(anchorType, anchorText) {
-  return call('anchors', 'anchor', {
-    anchorType: anchorType,
-    anchorText: anchorText
-  }).replace(/"/g, '');
-}
-
-
-function anchorExists(anchorType, anchorText) {
-  return call('anchors', 'exists', {
-    anchorType: anchorType,
-    anchorText: anchorText
-  });
-}
-
 
 // ==============================================================================
 // EXPOSED Functions: visible to the UI, can be called via localhost, web browser, or socket
@@ -34,36 +16,11 @@ function whoAmI()
 
 // set the handle of this node
 function setHandle(handle) {
-  debug(
-    '<mermaid>' +
-    App.Agent.String +
-    '-->>DHT:Check to see if ' +
-    App.Agent.String +
-    ' has any exisitng handles</mermaid>'
-  );
   var handles = getLinks(App.Key.Hash, 'handle');
-  debug(
-    '<mermaid>DHT->>' +
-    App.Agent.String +
-    ':returned ' +
-    handles.length +
-    ' existing handles for ' +
-    App.Agent.String +
-    '</mermaid>'
-  );
   if (handles.length > 0) {
     if (anchorExists('handle', handle) === 'false') {
       var oldKey = handles[0].Hash;
       var key = update('handle', anchor('handle', handle), oldKey);
-      debug(
-        '<mermaid>' +
-        App.Agent.String +
-        '->>' +
-        App.Agent.String +
-        ':' +
-        App.Agent.String +
-        ' has a handle so update it</mermaid>'
-      );
       commit('handle_links', {
         Links: [
           {
@@ -75,13 +32,6 @@ function setHandle(handle) {
           { Base: App.Key.Hash, Link: key, Tag: 'handle' }
         ]
       });
-      debug(
-        '<mermaid>' +
-        App.Agent.String +
-        '->>DHT:Update link to ' +
-        handle +
-        ' in "handle_links"</mermaid>'
-      );
       commit('directory_links', {
         Links: [
           {
@@ -93,13 +43,6 @@ function setHandle(handle) {
           { Base: App.DNA.Hash, Link: key, Tag: 'handle' }
         ]
       });
-      debug(
-        '<mermaid>' +
-        App.Agent.String +
-        '->>DHT:Update link to ' +
-        handle +
-        ' in "directory_links"</mermaid>'
-      );
       return key;
     } else {
       // debug('HandleInUse')
@@ -108,38 +51,12 @@ function setHandle(handle) {
   }
   if (anchorExists('handle', handle) === 'false') {
     var newHandleKey = commit('handle', anchor('handle', handle));
-    debug(
-      '<mermaid>' +
-      App.Agent.String +
-      '->>' +
-      App.Agent.String +
-      ':commit new handle' +
-      handle +
-      '</mermaid>'
-    );
-    debug(
-      '<mermaid>' + App.Agent.String + '->>DHT:Publish ' + handle + '</mermaid>'
-    );
     commit('handle_links', {
       Links: [{ Base: App.Key.Hash, Link: newHandleKey, Tag: 'handle' }]
     });
-    debug(
-      '<mermaid>' +
-      App.Agent.String +
-      '->>DHT:Link ' +
-      newHandleKey +
-      ' to "handle_links"</mermaid>'
-    );
     commit('directory_links', {
       Links: [{ Base: App.DNA.Hash, Link: newHandleKey, Tag: 'directory' }]
     });
-    debug(
-      '<mermaid>' +
-      App.Agent.String +
-      '->>DHT:Link ' +
-      handle +
-      ' to "directory_links"</mermaid>'
-    );
     return newHandleKey;
   } else {
     // debug('HandleInUse')
@@ -348,6 +265,22 @@ function getLinkToArray(base, tag) {
     }
 
     return links_filled;
+}
+
+
+function anchor(anchorType, anchorText) {
+  return call('anchors', 'anchor', {
+    anchorType: anchorType,
+    anchorText: anchorText
+  }).replace(/"/g, '');
+}
+
+
+function anchorExists(anchorType, anchorText) {
+  return call('anchors', 'exists', {
+    anchorType: anchorType,
+    anchorText: anchorText
+  });
 }
 
 
