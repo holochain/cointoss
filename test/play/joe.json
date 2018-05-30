@@ -5,7 +5,7 @@
             "Zome": "cointoss",
             "FnName": "setHandle",
             "Input": "joe",
-            "Output": "QmXPb415z6q26az143uE9gq18gA2acKf2D4L2PM3N76ua8",
+            "Output": "QmWkity8CVSCVjFfZdSSJjTa46nJQUe8zdNHtrppbPrGyA",
             "Exposure":"public",
             "Err": "",
             "Regexp": ""
@@ -27,7 +27,7 @@
             "Input": {},
             "Exposure":"public",
             "Err": "",
-            "Output":[{"handle":"jane","hash":"%jane_key%"},{"handle":"joe","hash":"%joe_key%"}],
+            "Output":[{"handle":"jane","handleHash":"%jane_key%"},{"handle":"joe","handleHash":"%joe_key%"}],
             "Time":2100
         },
         {
@@ -51,7 +51,18 @@
             "Regexp": "(win)|(loss)"
         },
         {
-            "Time":2300,
+            "Time":2400,
+            "Convey":"Get toss history",
+            "Zome": "cointoss",
+            "FnName": "getTossHistory",
+            "Input": {"responder":"%jane_key%"},
+            "Exposure":"public",
+            "Output": "",
+            "Err": "",
+            "Regexp": "[.*Qm[0-9-a-zA-Z]{44}.*]"
+        },
+        {
+            "Time":2500,
             "Wait": 100,
             "Repeat": 1,
             "Convey":"request cointoss with jane",
