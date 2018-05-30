@@ -24,7 +24,7 @@ function getHandles(callbackFn) {
 }
 
 function makePlayerHTML(handle_object) {
-    return "<li data-id=\"" + handle_object.hash + "\"" +
+    return "<li data-id=\"" + handle_object.handleHash + "\"" +
         "data-name=\"" + handle_object.handle + "\">" +
         handle_object.handle +
         "</li>";
@@ -33,6 +33,10 @@ function makePlayerHTML(handle_object) {
 function updatePlayers() {
     $("#players").empty();
     for (var x = 0; x < Handles.length; x++) {
+        if(Handles[x].handle === Handle)
+        {
+             Handles[x].handle = Handles[x].handle + " (myself)";
+        }
         $("#players").append(makePlayerHTML(Handles[x]));
     }
     if (ActivePlayer) {
@@ -42,6 +46,10 @@ function updatePlayers() {
 
 function getMyHandle(callbackFn) {
     getHandle(Me, function (handle) {
+        if(handle === "")
+        {
+            handle = "Click me!";
+        }
         Handle = handle;
         $("#handle").html(handle);
         if (callbackFn != undefined) {

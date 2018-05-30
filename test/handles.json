@@ -1,31 +1,61 @@
 {
     "Tests":[
-        {
-            "Convey":"We can set our handle",
+      {
+          "Convey":"If there is no handle set returns ''",
+          "Zome": "cointoss",
+          "FnName": "getHandle",
+          "Input": "%key%",
+          "Output": "",
+          "Exposure":"public",
+          "Err": "",
+          "Regexp": ".*"
+      },
+      {
+            "Convey":"We can create a new handle",
             "Zome": "cointoss",
             "FnName": "setHandle",
             "Input": "buffaloBill",
-            "Output": "QmWW5zXtV8jjW9BaFNf7RiPQfKTwVyi4y6wJyYD9vVug3w",
+            "Output": "%h2%",
             "Exposure":"public",
             "Err": "",
             "Regexp": ""
         },
         {
-            "Convey":"We can retrieve our handle",
+            "Convey":"We can retrieve the new handle",
             "Zome": "cointoss",
-            "FnName": "getMyHandle",
-            "Input": {},
+            "FnName": "getHandle",
+            "Input": "%key%",
             "Output": "buffaloBill",
             "Exposure":"public",
             "Err": "",
             "Regexp": ""
         },
         {
-            "Convey":"getAgent request on non existent handle returns null",
+            "Convey":"We can update our handle to a unique handle",
+            "Zome": "cointoss",
+            "FnName": "setHandle",
+            "Input": "phil",
+            "Output": "%h2%",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        },
+        {
+            "Convey":"Trying to use a handle that another person is using returns 'HandleInUse'",
+            "Zome": "cointoss",
+            "FnName": "setHandle",
+            "Input": "phil",
+            "Output": "HandleInUse",
+            "Exposure":"public",
+            "Err": "",
+            "Regexp": ""
+        },
+        {
+            "Convey":"getAgent request on non existent handle returns empty string",
             "Zome": "cointoss",
             "FnName": "getAgent",
             "Input": "fooHandle",
-            "Output": "null",
+            "Output": "",
             "Exposure":"public",
             "Err": "",
             "Regexp": ""
@@ -41,11 +71,11 @@
             "Regexp": ""
         },
         {
-            "Convey":"We can retrieve all handles in the directory",
+            "Convey":"We can retrieve a list of all handles, in single node mode there will only be the one handle",
             "Zome": "cointoss",
             "FnName": "getHandles",
-            "Input": {},
-            "Output": [{"handle":"buffaloBill","hash":"%key%"}],
+            "Input": "",
+            "Output": [{"handle":"phil", "handleHash":"%key%"}],
             "Exposure":"public",
             "Err": "",
             "Regexp": ""

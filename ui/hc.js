@@ -6,12 +6,12 @@
 
 // use send to make an ajax call to your exposed functions
 function send(fn,data,resultFn) {
-    console.log("calling: " + fn+" with "+JSON.stringify(data));
+    // console.log("calling: " + fn+" with "+JSON.stringify(data));
     $.post(
         "/fn/cointoss/"+fn,
         data,
         function(response) {
-            console.log("response: " + response);
+            // console.log("response: " + response);
             resultFn(response);
         }
     ).error(function(response) {
