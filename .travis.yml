@@ -6,3 +6,5 @@ services:
 - docker
 script:
 - docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev test"
+- docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev scenario play"
+- docker run --rm -v "$(pwd):/cointoss" holochain/holochain-proto:develop bash -c "cd /cointoss; hcdev scenario stress"
