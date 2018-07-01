@@ -107,6 +107,16 @@
             "Exposure": "public"
         },
         {
+            "Name": "createProposal",
+            "CallingType": "json",
+            "Exposure": "public"
+        },
+        {
+            "Name": "respondToProposal",
+            "CallingType": "json",
+            "Exposure": "public"
+        },
+        {
             "Name": "addMember",
             "CallingType": "json",
             "Exposure": "public"

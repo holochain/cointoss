@@ -17,6 +17,9 @@ function getCoGovVersion()
     return "0.0.0";
 }
 
+/*************
+COLLECTIVE METHODS
+**************/
 function createCollective(parms)
 {
 
@@ -53,87 +56,56 @@ function createCollective(parms)
     return c;
 }
 
-function addMember(parms)
+/*************
+PROPOSAL METHODS
+**************/
+function createProposal(parms)
 {
-    return addAction("add_member", parms);
-}
-
-function addAction(type, parms)
-{
-    if (parms.collectiveId === undefined)
-        throw(type + ": Parameter 'collectiveId' is required!");
-
     var now = getNow();
 
     // if ledger is null, use the Collective's primary ledger
     if (parms.ledgerId === undefined)
         parms.ledgerId = getLinks(parms.collectiveId, "ledger_primary", {})[0].Hash;
 
-    validateAction(type, parms);
+    // create the proposal entry
+    p = commit("cogov_proposal", { action: parms.action, timeStamp: now });
 
-    // instatiate the action
-    var action = { type: type, parms: parms, timeStamp: now };
+    // save some details about the member (timestamp repeated as a link for consistency)
+    commitItemDetails(p, "created", now);
 
-    // commit the action
-    var a = commit("cogov_action", action);
+    // add a link to the Ledger's entry
+    commit("cogov_proposal_link", { Links: [{ Base: parms.collectiveId, Link: p, Tag: "cogov_proposal" }]});
 
-    // save some details about the action (timestamp repeated as a link for consistency)
-    commitItemDetails(a, "created", now);
+    return m;
+}
 
-    // add a link to the Action on the Collective's Ledger
-    commit("cogov_action_link", { Links: [{ Base: parms.ledgerId, Link: a, Tag: "action" }]});
+function respondToProposal(parms)
+{
+    var now = getNow();
 
-    action.id = a;
+    r = commit("cogov_response", { proposalId: parms.proposalId, timeStamp: now });
 
-    return performAction(action);
+    // save some details about the member (timestamp repeated as a link for consistency)
+    commitItemDetails(r, "created", now);
+    
+    // add a link to the Proposal's entry
+    commit("cogov_response_link", { Links: [{ Base: parms.proposalId, Link: r, Tag: "cogov_response" }]});
+
+    return m;
 
 }
 
-function validateAction(type, parms)
+/*************
+MEMBER METHODS
+**************/
+function addMember(parms)
 {
-    if (type == "add_member")
-        return validateAddMember(parms);
-
-    throw("validateAction: unknown type: '" + type + "'!")
-}
-
-function validateAddMember(parms)
-{
-    if (getMembers(parms).length > 0)
-        checkAuthorization("addMember", parms);
-
-    if (parms.collectiveId === undefined)
-        throw("createCollective: Parameter 'collectiveId' is required!");
-
-    if (parms.agentId === undefined)
-        throw("createCollective: Parameter 'agentId' is required!");
-
-    confirmCollective(parms.collectiveId);
-
-    var m = makeHash("cogov_member", parms.agentId);
-    var members = [];
-
-    // make sure the agentId isn't aleady a member
-    try { members = getLinks(parms.collectiveId, "cogov_member", { }) } 
-    catch(err) { if (err.holochainMessage != "No links for cogov_member") throw err; }
-
-    for(var x=0; x < members.length; x++)
-        if (members[x].Hash == m)
-            throw "AgentId '" + parms.agentId + "' is already a member of the Collective!";
-
-}
-
-function performAction(action)
-{
-    if (action.type == "add_member")
-        return performAddMember(action);
-
-    throw("performAction: unknown type: '" + action.type + "'!")
-
+    return addAction("add_member", parms);
 }
 
 function performAddMember(action)
 {
+    debug(action)
     // create the member entry
     m = commit("cogov_member", action.parms.agentId);
 
@@ -160,6 +132,7 @@ function getMembers(parms)
     try { var members = getLinks(parms.collectiveId, "cogov_member", { Load: true }); }
     catch(err) { if (err.holochainMessage !== "No links for cogov_member") throw err; }
 
+    debug(members)
     var rtn = [];
 
     for(var x=0; x < members.length; x++)
@@ -168,6 +141,95 @@ function getMembers(parms)
     return rtn;
     
 }
+function validateAddMember(parms)
+{
+    if (parms.collectiveId === undefined)
+        throw("createCollective: Parameter 'collectiveId' is required!");
+
+    if (parms.agentId === undefined)
+        throw("createCollective: Parameter 'agentId' is required!");
+
+    confirmCollective(parms.collectiveId);
+
+    var m = makeHash("cogov_member", parms.agentId);
+    var members = [];
+
+    // make sure the agentId isn't aleady a member
+    try { members = getLinks(parms.collectiveId, "cogov_member", { }) } 
+    catch(err) { if (err.holochainMessage != "No links for cogov_member") throw err; }
+
+    for(var x=0; x < members.length; x++)
+        if (members[x].Hash == m)
+            throw "AgentId '" + parms.agentId + "' is already a member of the Collective!";
+
+}
+
+/*************
+ACTION METHODS
+**************/
+function performAction(action)
+{
+
+    var rtn;
+
+    if (action.type == "add_member")
+        rtn = performAddMember(action);
+
+    commitItemDetails(action.id, "performed", getNow());
+
+    if (rtn === undefined)
+        throw("performAction: unknown type: '" + action.type + "'!")
+
+}
+
+function addAction(type, parms)
+{
+    if (parms.collectiveId === undefined)
+        throw(type + ": Parameter 'collectiveId' is required!");
+
+    var now = getNow();
+
+    // if ledger is null, use the Collective's primary ledger
+    if (parms.ledgerId === undefined)
+        parms.ledgerId = getLinks(parms.collectiveId, "ledger_primary", {})[0].Hash;
+
+    // instantiate the action
+    var action = { type: type, parms: parms, timeStamp: now };
+
+    validateAction(action);
+
+    // commit the action
+    var a = commit("cogov_action", action);
+
+    // save some details about the action (timestamp repeated as a link for consistency)
+    commitItemDetails(a, "created", now);
+
+    // add a link to the Action on the Collective's Ledger
+    commit("cogov_action_link", { Links: [{ Base: parms.ledgerId, Link: a, Tag: "action" }]});
+
+    action.id = a;
+
+    return performAction(action);
+
+}
+
+function validateAction(action)
+{
+    if (action.type == "add_member")
+        validateAddMember(action.parms);
+
+    if (getMembers(parms).length == 0 && action.type == "add_member")
+        return true;
+
+    // check if this is an authorized action
+
+
+    // check if this was a positively resolved proposal
+
+
+    throw("validateAction: unknown type: '" + type + "'!")
+}
+
 
 /*************
 HELPER METHODS
@@ -199,6 +261,17 @@ function commitItemDetails(base, name, value)
 function getNow()
 {
     return (new Date()).getUTCDate();
+}
+
+function getActionId(base)
+{
+    try { var actionIds = getLinks(base, "cogov_item_details_actionId", { Load: true }); }
+    catch(err) { debug(err) }
+
+    if (actionIds.length != 1)
+        throw("More than one actionId entry linked off")
+
+    return actionIds[0].Entry.value;
 }
 
 /*************
@@ -238,6 +311,12 @@ function validate(entry_type, entry, header, sources)
     if (entry_type == "cogov_ledger_link")
         return true;
 
+    if (entry_type == "cogov_proposal")
+        return true;
+
+    if (entry_type == "cogov_proposal_link")
+        return true;
+
     if (entry_type == "cogov_action")
         return true;
 
@@ -247,7 +326,7 @@ function validate(entry_type, entry, header, sources)
     return false;
 }
 
-function validateLink(linkingEntryType, baseHash, linkHash, tag, pkg, sources)
+function validateLink(linkingEntryType, baseHash, linksArray, tag, pkg, sources)
 {
     debug("cogov validateLink:" + linkingEntryType)
     
@@ -258,19 +337,36 @@ function validateLink(linkingEntryType, baseHash, linkHash, tag, pkg, sources)
         return true;
 
     if (linkingEntryType == "cogov_member_link")
-        return true;
+    {
+        var actionId = getActionId(linksArray[0].Link)
+        var action = get(actionId);
 
-    if (linkingEntryType == "cogov_action_link")
+        try { validateAction(action) }
+        catch(err) { debug("FAILED!"); return false; }
+
         return true;
+        
+    }
+    
+    if (linkingEntryType == "cogov_action_link")
+    {
+        try { validateAction(get(linksArray[0].Link)) }
+        catch(err) { debug("FAILED!"); return false; }
+
+        return true;
+    }
 
     if (linkingEntryType == "cogov_ledger_link")
+        return true;
+
+    if (linkingEntryType == "cogov_proposal_link")
         return true;
 
     return false;
 }
 
-function validateMod(entry_type, hash, newHash, pkg, sources) { return true; }
-function validateDel(entry_type, hash, pkg, sources) { return true; }
+function validateMod(entry_type, hash, newHash, pkg, sources) { return true }
+function validateDel(entry_type, hash, pkg, sources) { return true }
 function validatePutPkg(entry_type) { return null }
 function validateModPkg(entry_type) { return null }
 function validateDelPkg(entry_type) { return null }

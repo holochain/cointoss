@@ -103,11 +103,14 @@ function validateLink(linkingEntryType, baseHash, linkHash, tag, pkg, sources)
     {
         // there can only be one per app
         try {
-            debug(getLinks(App.DNA.Hash, "fork-gov_app_dev_collective"))
+            getLinks(App.DNA.Hash, "fork-gov_app_dev_collective", {})
         }
         catch(err)
         {
-            return true; // got error because a no link exists- then good
+            if (err.holochainMessage == "No links for fork-gov_app_dev_collective")
+                return true // got error because a no link exists- then good
+            else
+                throw(err)
         }
 
         return false; // otherwise fail
